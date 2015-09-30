@@ -15,17 +15,13 @@ private:
 	int startY;
 	int endX;
 	int endY;
-	boolean direction;		//true --> going up   false--->go down
-	float dy;
-	bool stop;
-	int floor;
+	boolean direction;		//true --> going up		false --> go down
+	bool status;			//true --> moving		flase --> stationery
+	int floor;		
 
 public:
 	Elevator(int sX, int sY, int eX, int eY) :startX(sX), startY(sY), endX(eX), endY(eY)
 	{
-		//bmp = al_create_bitmap(50, 50);
-		//al_set_target_bitmap(bmp);
-		//al_clear_to_color(al_map_rgb(255, 0, 0));
 		al_draw_filled_rectangle(sX, sY, eX, eY, al_map_rgb(0, 0, 255));
 	};
 
@@ -36,9 +32,20 @@ public:
 		return direction;
 	}
 
+	void setDirection(boolean d)
+	{
+		direction = d;
+	}
+
+	void setStatus(boolean d)
+	{
+		status = d;
+	}
+
 	void moveUp()
 	{
-		if (startY - 1 >= 80)
+
+		if (startY - 1 >= 80 && direction)
 		{
 			al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 0));
 			startY--;
@@ -50,17 +57,15 @@ public:
 
 	void moveDown()
 	{
-		al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 0));
-		startY++;
-		endY++;
-		al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 255));
-		direction = false;
+		if (startY + 1 <= 620 && !direction)
+		{
+			al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 0));
+			startY++;
+			endY++;
+			al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 255));
+		}
 	}
 
-	int getY()
-	{
-		return startY;
-	}
 
 	int floorPosition()
 	{

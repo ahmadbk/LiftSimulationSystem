@@ -24,9 +24,7 @@ const float FPS = 45;
 const int SCREEN_W = 640;
 const int SCREEN_H = 700;
 
-boolean LiftDirection = true;		//go up --> true  and go down --> false
-boolean moveElevator = false;		//dont move --> false
-boolean elevatorDone = false;		//Elevator only created once
+boolean makeObjects = false;		//To ensure Elevator only created once
 
 
 enum MYKEYS {
@@ -54,7 +52,6 @@ int main(int argc, char **argv)
 	Button *b4[10];	//2nd column - floor down buttons
 	Elevator *lift = NULL;
 
-	//Elevator temp(400,620,250,670);	
 
 	b4[9] = NULL;
 	b3[9] = NULL;
@@ -149,10 +146,10 @@ int main(int argc, char **argv)
 		al_draw_text(font2, al_map_rgb(255, 0, 40), startx + 320, starty, ALLEGRO_ALIGN_LEFT, "OUTSIDE ELEVATOR");
 		al_draw_line(320, 0, 320, 700, al_map_rgb(255, 0, 40), 10);
 
-		if (!elevatorDone)
+		if (!makeObjects)
 		{
 			lift = new Elevator(400, 620, 450, 670);
-			elevatorDone = true;
+			makeObjects = true;
 		}
 
 		//-----------------------------------------------------------------
@@ -284,21 +281,17 @@ int main(int argc, char **argv)
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
 
-		LiftDirection = true;		//Diretion UP
-		moveElevator = true;		//Move the lift
-
 		printf("%d\n", lift->floorPosition());
+
+		lift->setDirection(true);
+		lift->setStatus(true);
 
 		if (ev.type == ALLEGRO_EVENT_TIMER)
 		{
-			if (moveElevator)
+			if (lift->floorPosition() != 5)
 			{
-				if (lift->floorPosition() != 5)
-					if (LiftDirection)
-						lift->moveUp();
-
-				if (!LiftDirection)
-					lift->moveDown();
+				lift->moveUp();
+				lift->moveDown();
 			}
 		}
 
