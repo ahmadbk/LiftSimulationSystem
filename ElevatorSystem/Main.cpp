@@ -89,12 +89,13 @@ int main(int argc, char **argv)
 	al_init_font_addon();
 	al_init_ttf_addon();
 
-	ALLEGRO_FONT *font = al_load_ttf_font("CFNuclearWar-Regular.ttf", 32, 0);
-	ALLEGRO_FONT *font1 = al_load_ttf_font("CFNuclearWar-Regular.ttf", 72, 0);
-	ALLEGRO_FONT *font2 = al_load_ttf_font("CFNuclearWar-Regular.ttf", 30, 0);
-	ALLEGRO_FONT *font3 = al_load_ttf_font("CFNuclearWar-Regular.ttf", 10, 0);
+	ALLEGRO_FONT *font1 = al_load_ttf_font("OpenSans-Regular.ttf", 20, 0);
+	ALLEGRO_FONT *font2 = al_load_ttf_font("OpenSans-Regular.ttf", 30, 0);
+	ALLEGRO_FONT *font3 = al_load_ttf_font("OpenSans-Regular.ttf", 12, 0);
+	ALLEGRO_FONT *font4 = al_load_ttf_font("OpenSans-Regular.ttf", 12, 0);
 
-	if (!font){
+
+	if (!font1){
 		fprintf(stderr, "Could not load font.\n");
 		return -1;
 	}
@@ -147,7 +148,7 @@ int main(int argc, char **argv)
 		for (int i = 0; i < 5; i++)
 		{
 			b1[i] = new Button(70, sY, 100, eY, height, ButtonType, (i + 1));
-			al_draw_text(font3, al_map_rgb(0, 0, 255), 80, sY + 10, ALLEGRO_ALIGN_LEFT, "1");
+			al_draw_text(font1, al_map_rgb(0, 0, 255), 80, sY, ALLEGRO_ALIGN_LEFT, "1");
 			sY += 50;
 			eY += 50;
 		}
@@ -160,7 +161,7 @@ int main(int argc, char **argv)
 		for (int i = 0; i < 5; i++)
 		{
 			b2[i] = new Button(150, sY, 180, eY, height, ButtonType, (i + 1 + 5));
-			al_draw_text(font3, al_map_rgb(0, 0, 255), 160, sY + 10, ALLEGRO_ALIGN_LEFT, "2");
+			al_draw_text(font1, al_map_rgb(0, 0, 255), 160, sY, ALLEGRO_ALIGN_LEFT, "2");
 			sY += 50;
 			eY += 50;
 		}
@@ -188,12 +189,12 @@ int main(int argc, char **argv)
 			if (i != 0)
 			{
 				b3[i] = new Button(570, sY, 590, eY, height, ButtonType, (10 - i), true);
-				al_draw_text(font3, al_map_rgb(0, 0, 255), 576, sY + 4, ALLEGRO_ALIGN_LEFT, "U");
+				al_draw_text(font4, al_map_rgb(0, 0, 255), 576, sY, ALLEGRO_ALIGN_LEFT, "\c");
 			}
 			if (i != 9)
 			{
 				b4[i] = new Button(610, sY, 630, eY, height, ButtonType, (10 - i), false);
-				al_draw_text(font3, al_map_rgb(0, 0, 255), 616, sY + 4, ALLEGRO_ALIGN_LEFT, "D");
+				al_draw_text(font3, al_map_rgb(0, 0, 255), 616, sY, ALLEGRO_ALIGN_LEFT, "D");
 			}
 			sY += 60;
 			eY += 60;
@@ -209,28 +210,42 @@ int main(int argc, char **argv)
 		{
 			for (int i = 0; i < 5; i++)
 			{
-				boolean fff1 = false;
-				boolean fff2 = false;
-				fff1 = b1[i]->CheckButtonPressed(ec);
-				fff2 = b2[i]->CheckButtonPressed(ec);
-				if (fff1)
+				boolean ff1 = false;
+				boolean ff2 = false;
+				ff1 = b1[i]->CheckButtonPressed(ec);
+				ff2 = b2[i]->CheckButtonPressed(ec);
+				
+				if (ff1)
+				{
 					printf("%d\n", b1[i]->getBNum());
-				if (fff2)
+					b1[i]->illuminate();
+				}
+				if (ff2)
+				{
 					printf("%d\n", b2[i]->getBNum());
+					b2[i]->illuminate();
+				}
 			}
 
 			for (int i = 0; i < 10; i++)
 			{
-				boolean fff1 = false;
-				boolean fff2 = false;
+				boolean ff1 = false;
+				boolean ff2 = false;
 				if (i != 0)
-					fff1 = b3[i]->CheckButtonPressed(ec);
+					ff1 = b3[i]->CheckButtonPressed(ec);
 				if (i != 9)
-					fff2 = b4[i]->CheckButtonPressed(ec);
-				if (fff1)
+					ff2 = b4[i]->CheckButtonPressed(ec);
+
+				if (ff1)
+				{
 					printf("(%d,%d)\n", b3[i]->getBNum(), b3[i]->getDirection());
-				if (fff2)
+					b3[i]->illuminate();
+				}
+				if (ff2)
+				{
 					printf("(%d,%d)\n", b4[i]->getBNum(), b4[i]->getDirection());
+					b4[i]->illuminate();
+				}
 			}
 
 		}
@@ -254,7 +269,9 @@ int main(int argc, char **argv)
 
 	}
 
-	al_destroy_font(font);
+	al_destroy_font(font1);
+	al_destroy_font(font2);
+	al_destroy_font(font3);
 	al_destroy_timer(timer);
 	al_destroy_display(display);
 	al_destroy_event_queue(event_queue);

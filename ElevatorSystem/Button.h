@@ -67,5 +67,16 @@ public:
 		if (buttonType == 2)
 			return FbuttonDirection;
 	}
+
+	void illuminate()
+	{
+		al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(127, 127, 0));
+	}
+
+	void CancelIlluminate()
+	{
+		al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 255));
+		al_draw_rectangle(startX, startY, endX, endY, al_map_rgb(255, 0, 0),height);
+	}
 };
 
