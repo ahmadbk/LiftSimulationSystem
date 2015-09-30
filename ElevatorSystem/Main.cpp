@@ -13,6 +13,7 @@
 #include <string>
 
 #include "Button.h"
+#include "Elevator.h"
 
 
 #define PI 3.14159265359
@@ -31,6 +32,8 @@ enum MYKEYS {
 int main(int argc, char **argv)
 
 {
+
+
 	srand(time(NULL));
 
 	ALLEGRO_DISPLAY *display = NULL;
@@ -40,10 +43,13 @@ int main(int argc, char **argv)
 	ALLEGRO_SAMPLE *SAMMY = NULL;
 	ALLEGRO_SAMPLE *thunder = NULL;
 
+
+	//create stacks or queues here
 	Button *b1[5];	//1st column - elevator buttons
 	Button *b2[5];	//2nd column - elevator buttons
 	Button *b3[10];	//1st column - floor up buttons
 	Button *b4[10];	//2nd column - floor down buttons
+	Elevator *lift;
 	b4[9] = NULL;
 	b3[9] = NULL;
 
@@ -137,6 +143,8 @@ int main(int argc, char **argv)
 		al_draw_text(font2, al_map_rgb(255, 0, 40), startx + 320, starty, ALLEGRO_ALIGN_LEFT, "OUTSIDE ELEVATOR");
 		al_draw_line(320, 0, 320, 700, al_map_rgb(255, 0, 40), 10);
 
+		lift = new Elevator(400, 620, 450, 670);
+
 
 		//-----------------------------------------------------------------
 
@@ -148,6 +156,8 @@ int main(int argc, char **argv)
 		for (int i = 0; i < 5; i++)
 		{
 			b1[i] = new Button(70, sY, 100, eY, height, ButtonType, (i + 1));
+			int a = i + 1;
+			char *c = (char*)a;
 			al_draw_text(font1, al_map_rgb(0, 0, 255), 80, sY, ALLEGRO_ALIGN_LEFT, "1");
 			sY += 50;
 			eY += 50;
@@ -256,6 +266,12 @@ int main(int argc, char **argv)
 		}
 
 	}
+
+//Work Here
+	//-order the queue
+	//-check the direction of the lift
+	//-command the lift to move to desitination
+//
 
 	while (!doexit)
 	{
