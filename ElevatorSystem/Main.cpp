@@ -24,13 +24,9 @@ const float FPS = 45;
 const int SCREEN_W = 640;
 const int SCREEN_H = 700;
 
-boolean LiftDirection = true;   //go up --> true  and go down --> false
+boolean LiftDirection = true;		//go up --> true  and go down --> false
 boolean moveElevator = false;		//dont move --> false
-
-int yHeightS = 620;
-int yHeightE = 670;
-
-boolean elevatorDone = false;
+boolean elevatorDone = false;		//Elevator only created once
 
 
 enum MYKEYS {
@@ -155,7 +151,7 @@ int main(int argc, char **argv)
 
 		if (!elevatorDone)
 		{
-			lift = new Elevator(400, yHeightS, 450, yHeightE);
+			lift = new Elevator(400, 620, 450, 670);
 			elevatorDone = true;
 		}
 
@@ -279,6 +275,12 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 
+		//Work Here
+		//-order the queue
+		//-check the direction of the lift
+		//-command the lift to move to desitination
+		//
+
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
 
@@ -300,16 +302,7 @@ int main(int argc, char **argv)
 			}
 		}
 
-
-		
-
 	}
-
-//Work Here
-	//-order the queue
-	//-check the direction of the lift
-	//-command the lift to move to desitination
-//
 
 	//while (!doexit)
 	//{
