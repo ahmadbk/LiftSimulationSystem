@@ -24,15 +24,22 @@ const float FPS = 45;
 const int SCREEN_W = 640;
 const int SCREEN_H = 700;
 
+boolean LiftDirection = true;   //go up --> true  and go down --> false
+boolean moveElevator = false;		//dont move --> false
+
+int yHeightS = 620;
+int yHeightE = 670;
+
+boolean elevatorDone = false;
+
+
 enum MYKEYS {
 	KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SPACE
 };
 
 
 int main(int argc, char **argv)
-
 {
-
 
 	srand(time(NULL));
 
@@ -49,7 +56,10 @@ int main(int argc, char **argv)
 	Button *b2[5];	//2nd column - elevator buttons
 	Button *b3[10];	//1st column - floor up buttons
 	Button *b4[10];	//2nd column - floor down buttons
-	Elevator *lift;
+	Elevator *lift = NULL;
+
+	//Elevator temp(400,620,250,670);	
+
 	b4[9] = NULL;
 	b3[9] = NULL;
 
@@ -143,8 +153,11 @@ int main(int argc, char **argv)
 		al_draw_text(font2, al_map_rgb(255, 0, 40), startx + 320, starty, ALLEGRO_ALIGN_LEFT, "OUTSIDE ELEVATOR");
 		al_draw_line(320, 0, 320, 700, al_map_rgb(255, 0, 40), 10);
 
-		lift = new Elevator(400, 620, 450, 670);
-
+		if (!elevatorDone)
+		{
+			lift = new Elevator(400, yHeightS, 450, yHeightE);
+			elevatorDone = true;
+		}
 
 		//-----------------------------------------------------------------
 
@@ -212,6 +225,7 @@ int main(int argc, char **argv)
 
 		//------------------------------------------------------------------
 
+
 		al_flip_display();
 		ALLEGRO_EVENT ec;
 		al_wait_for_event(event_queue, &ec);
@@ -265,6 +279,30 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 
+		ALLEGRO_EVENT ev;
+		al_wait_for_event(event_queue, &ev);
+
+		LiftDirection = true;		//Diretion UP
+		moveElevator = true;		//Move the lift
+
+		printf("%d\n", lift->floorPosition());
+
+		if (ev.type == ALLEGRO_EVENT_TIMER)
+		{
+			if (moveElevator)
+			{
+				if (lift->floorPosition() != 5)
+					if (LiftDirection)
+						lift->moveUp();
+
+				if (!LiftDirection)
+					lift->moveDown();
+			}
+		}
+
+
+		
+
 	}
 
 //Work Here
@@ -273,17 +311,22 @@ int main(int argc, char **argv)
 	//-command the lift to move to desitination
 //
 
-	while (!doexit)
-	{
-		ALLEGRO_EVENT ev;
-		al_wait_for_event(event_queue, &ev);
+	//while (!doexit)
+	//{
+	//	ALLEGRO_EVENT ev;
+	//	al_wait_for_event(event_queue, &ev);
 
-		if (redraw && al_is_event_queue_empty(event_queue))
-		{
-			al_flip_display();
-		}
+	//	if (ev.type == ALLEGRO_EVENT_TIMER)
+	//	{
+	//		//lift->drawElevator(yHeightS + 100, yHeightE + 100);
+	//	}
 
-	}
+	//	if (redraw && al_is_event_queue_empty(event_queue))
+	//	{
+	//	//	al_flip_display();
+	//	}
+
+	//}
 
 	al_destroy_font(font1);
 	al_destroy_font(font2);
