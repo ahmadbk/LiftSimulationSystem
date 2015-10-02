@@ -11,6 +11,9 @@
 #include <math.h>
 #include <iostream>
 #include <string>
+#include <vector>
+#include <algorithm>    // For std::sort
+#include <functional>	// For comparison with greator
 
 #include "Button.h"
 #include "Elevator.h"
@@ -46,6 +49,9 @@ int main(int argc, char **argv)
 
 
 	//create stacks or queues here
+	std::vector<int> upRequestList;
+	std::vector<int> downRequestList;
+	int destination = 0;	// Initial dstination is ground floor
 	Button *b1[5];	//1st column - elevator buttons
 	Button *b2[5];	//2nd column - elevator buttons
 	Button *b3[10];	//1st column - floor up buttons
@@ -62,23 +68,27 @@ int main(int argc, char **argv)
 
 	if (!al_init()) {
 		fprintf(stderr, "failed to initialize allegro!\n");
+		system("pause");
 		return -1;
 	}
 
 	if (!al_install_keyboard()) {
 		fprintf(stderr, "failed to initialize the keyboard!\n");
+		system("pause");
 		return -1;
 	}
 
 	if (!al_init_primitives_addon())
 	{
 		fprintf(stderr, "failed to initialize primitives addon!\n");
+		system("pause");
 		return -1;
 	}
 
 	timer = al_create_timer(1.0 / FPS);
 	if (!timer) {
 		fprintf(stderr, "failed to create timer!\n");
+		system("pause");
 		return -1;
 	}
 
@@ -86,12 +96,14 @@ int main(int argc, char **argv)
 
 	if (!display) {
 		fprintf(stderr, "failed to create display!\n");
+		system("pause");
 		al_destroy_timer(timer);
 		return -1;
 	}
 
 	if (!al_install_mouse()) {
 		fprintf(stderr, "failed to initialize the mouse!\n");
+		system("pause");
 		return -1;
 	}
 
@@ -106,11 +118,13 @@ int main(int argc, char **argv)
 
 	if (!font1){
 		fprintf(stderr, "Could not load font.\n");
+		system("pause");
 		return -1;
 	}
 
 	if (!al_init_image_addon()) {
 		fprintf(stderr, "Failed to initialize image addon!\n");
+		system("pause");
 	}
 
 	al_set_target_bitmap(al_get_backbuffer(display));
@@ -118,6 +132,7 @@ int main(int argc, char **argv)
 	event_queue = al_create_event_queue();
 	if (!event_queue) {
 		fprintf(stderr, "failed to create event_queue!\n");
+		system("pause");
 		al_destroy_display(display);
 		al_destroy_timer(timer);
 		return -1;
@@ -146,10 +161,10 @@ int main(int argc, char **argv)
 		al_draw_text(font2, al_map_rgb(255, 0, 40), startx + 320, starty, ALLEGRO_ALIGN_LEFT, "OUTSIDE ELEVATOR");
 		al_draw_line(320, 0, 320, 700, al_map_rgb(255, 0, 40), 10);
 
-		if (!makeObjects)
+		if (!makeObjects)								// If elevator has not been created
 		{
-			lift = new Elevator(400, 620, 450, 670);
-			makeObjects = true;
+			lift = new Elevator(400, 620, 450, 670);	// Create elevator
+			makeObjects = true;							// Prevents another elevator from being created					
 		}
 
 		//-----------------------------------------------------------------
@@ -225,31 +240,32 @@ int main(int argc, char **argv)
 
 		if (ec.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
 		{
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < 5; i++)					// INSIDE ELEVATOR BUTTONS
 			{
 				boolean ff1 = false;
 				boolean ff2 = false;
-				ff1 = b1[i]->CheckButtonPressed(ec);
+				ff1 = b1[i]->CheckButtonPressed(ec);	// Look for button presses
 				ff2 = b2[i]->CheckButtonPressed(ec);
 				
-				if (ff1)
-				{
-					printf("%d\n", b1[i]->getBNum());
-					b1[i]->illuminate();
+				if (ff1)								// If there is a button press (INSIDE ELEVATOR)
+				{	
+					printf("%d\n", b1[i]->getBNum());	// Print on console and 
+					b1[i]->illuminate();				// Illuminate the button
 				}
-				if (ff2)
+				if (ff2)								// If there is a button press (OUTSIDE ELEVATOR)
 				{
-					printf("%d\n", b2[i]->getBNum());
-					b2[i]->illuminate();
+					printf("%d\n", b2[i]->getBNum());	// Print on console and 
+					b2[i]->illuminate();				// Illuminate the button
 				}
 			}
 
-			for (int i = 0; i < 10; i++)
+			for (int i = 0; i < 10; i++)				// OUTSIDE  ELEVATOR BUTTONS
 			{
 				boolean ff1 = false;
 				boolean ff2 = false;
+				bool notPressed = true;
 				if (i != 0)
-					ff1 = b3[i]->CheckButtonPressed(ec);
+					ff1 = b3[i]->CheckButtonPressed(ec);	// Check for UP request
 				if (i != 9)
 					ff2 = b4[i]->CheckButtonPressed(ec);
 
@@ -257,11 +273,35 @@ int main(int argc, char **argv)
 				{
 					printf("(%d,%d)\n", b3[i]->getBNum(), b3[i]->getDirection());
 					b3[i]->illuminate();
+
+					for (int a = 0; a < upRequestList.size(); a++)
+					{
+						if (upRequestList[a] == a)
+							notPressed = false;
+					}
+					if (notPressed = true)									// If this floor has not aleady been pressed
+						upRequestList.push_back(i);							// add it in the reequest list
+					std::sort(upRequestList.begin(), upRequestList.end());	// Sort in ascending order
+					destination = lift->destination(upRequestList);			// update destination 
 				}
 				if (ff2)
 				{
 					printf("(%d,%d)\n", b4[i]->getBNum(), b4[i]->getDirection());
 					b4[i]->illuminate();
+
+					notPressed = true;
+					for (int a = 0; a < downRequestList.size(); a++)
+					{
+						if (downRequestList[a] == a)
+							notPressed = false;
+					}
+					if (notPressed = true)
+						downRequestList.push_back(i);
+					std::sort(downRequestList.begin(), downRequestList.end(), std::greater<int>());	// Sort in descending order
+					// destination = lift->destination(downRequestList);
+
+			
+					
 				}
 			}
 
@@ -288,31 +328,34 @@ int main(int argc, char **argv)
 
 		if (ev.type == ALLEGRO_EVENT_TIMER)
 		{
-			if (lift->floorPosition() != 5)
+			
+
+			if (lift->floorPosition() < destination)
 			{
 				lift->moveUp();
 				lift->moveDown();
 			}
+
 		}
 
 	}
 
-	//while (!doexit)
-	//{
-	//	ALLEGRO_EVENT ev;
-	//	al_wait_for_event(event_queue, &ev);
+	while (!doexit)
+	{
+		ALLEGRO_EVENT ev;
+		al_wait_for_event(event_queue, &ev);
 
-	//	if (ev.type == ALLEGRO_EVENT_TIMER)
-	//	{
-	//		//lift->drawElevator(yHeightS + 100, yHeightE + 100);
-	//	}
+		if (ev.type == ALLEGRO_EVENT_TIMER)
+		{
+			//lift->drawElevator(yHeightS + 100, yHeightE + 100);
+		}
 
-	//	if (redraw && al_is_event_queue_empty(event_queue))
-	//	{
-	//	//	al_flip_display();
-	//	}
+		if (redraw && al_is_event_queue_empty(event_queue))
+		{
+			al_flip_display();
+		}
 
-	//}
+	}
 
 	al_destroy_font(font1);
 	al_destroy_font(font2);

@@ -7,6 +7,10 @@
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 
+#include <vector>
+#include <algorithm>    // For std::sort
+#include <functional>	// For comparison with greator
+
 class Elevator
 {
 private:
@@ -16,8 +20,8 @@ private:
 	int endX;
 	int endY;
 	boolean direction;		//true --> going up		false --> go down
-	bool status;			//true --> moving		flase --> stationery
-	int floor;		
+	bool status;			//true --> moving		flase --> stationary
+	int floor;
 
 public:
 	Elevator(int sX, int sY, int eX, int eY) :startX(sX), startY(sY), endX(eX), endY(eY)
@@ -82,6 +86,21 @@ public:
 		if (temp != 0)
 			floor = temp;
 		return floor;
+	}
+
+	// destination() accepts a vector as an argument and determines which floor to accept a request from. For now onl UP request are executed
+	int destination(std::vector<int> & reqList) 
+	{
+		int destFloor = floor, it = 0;
+		if (reqList.size() > 1)				// This is only done if there are requests in the list
+		{
+			while (it<reqList.size() && destFloor <= reqList[it])	//
+			{
+				destFloor++;
+				it++;
+			}
+		}
+		return destFloor;
 	}
 
 };
