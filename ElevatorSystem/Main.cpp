@@ -51,8 +51,6 @@ int main(int argc, char **argv)
 	Button *b3[10];	//1st column - floor up buttons
 	Button *b4[10];	//2nd column - floor down buttons
 	Elevator *lift = NULL;
-	boolean change = false;
-
 
 	b4[9] = NULL;
 	b3[9] = NULL;
@@ -270,7 +268,6 @@ int main(int argc, char **argv)
 				if (ff2)
 				{
 					printf("(%d,%d)\n", b4[i]->getBNum(), b4[i]->getDirection());
-					//change = true;
 					b4[i]->illuminate();
 				}
 			}
@@ -286,27 +283,26 @@ int main(int argc, char **argv)
 		//-order the queue
 		//-check the direction of the lift
 		//-command the lift to move to desitination
-		//
+		
 
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
 
 		printf("%d\n", lift->floorPosition());	//Print the current position of the floor
 
-		lift->setStatus(true);					//set the lift in motion 
-
-		//if (!change)
-			lift->setDirection(true);				//Set direction to go up
-		//else
-		//	lift->setDirection(false);				//if change in direction, then set direction to down
-
 		if (ev.type == ALLEGRO_EVENT_TIMER)
 		{
 			if (lift->floorPosition() != 10)	//I want the lift to go to the 5th floor
 			{
+				lift->setStatus(true);			//set the lift in motion
 				lift->moveUp();					//move up 
 				lift->moveDown();				//move down
-			}									//accroding to the direction i have set the lift earlier, the lift will move in that direction								
+			}
+			else
+			{
+				lift->setStatus(false);
+			}
+												//accroding to the direction i have set the lift earlier, the lift will move in that direction								
 		}										//and surpass the other method --> this happens in the methods
 										
 	}
