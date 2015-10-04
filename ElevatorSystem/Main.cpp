@@ -51,6 +51,7 @@ int main(int argc, char **argv)
 	Button *b3[10];	//1st column - floor up buttons
 	Button *b4[10];	//2nd column - floor down buttons
 	Elevator *lift = NULL;
+	boolean change = false;
 
 
 	b4[9] = NULL;
@@ -200,16 +201,16 @@ int main(int argc, char **argv)
 		sY = 100;
 		eY = 120;
 		ButtonType = 2;		//Floor Button
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 10; i++)					//Button(startX,startY,endX,endY,height,floor/elevator,floor number/direction)
 		{
 			if (i != 0)
 			{
-				b3[i] = new Button(570, sY, 590, eY, height, ButtonType, (10 - i), true);
-				al_draw_text(font4, al_map_rgb(0, 0, 255), 576, sY, ALLEGRO_ALIGN_LEFT, "\c");
+				b3[i] = new Button(570, sY, 590, eY, height, ButtonType, (10 - i), true);			//creates the first column of the floor button excluding last floor
+				al_draw_text(font4, al_map_rgb(0, 0, 255), 576, sY, ALLEGRO_ALIGN_LEFT, "\c");		
 			}
 			if (i != 9)
 			{
-				b4[i] = new Button(610, sY, 630, eY, height, ButtonType, (10 - i), false);
+				b4[i] = new Button(610, sY, 630, eY, height, ButtonType, (10 - i), false);			//creates the second column of the floor buttons excluding first floor
 				al_draw_text(font3, al_map_rgb(0, 0, 255), 616, sY, ALLEGRO_ALIGN_LEFT, "D");
 			}
 			sY += 60;
@@ -223,19 +224,26 @@ int main(int argc, char **argv)
 		ALLEGRO_EVENT ec;
 		al_wait_for_event(event_queue, &ec);
 
+		//Two types of buttons: Elevator and Floor 
+		//Each type of buttons have two corresponding array of buttons set in columns on the GUI
+		//Elevator buttons are in b[1] and b[2]
+		//Floor buttons are in b[3] and b[4]
+		//now to check which button was pressed: 1st check if there was a mouse click
+
 		if (ec.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
 		{
+			//check all elevator buttons
 			for (int i = 0; i < 5; i++)
 			{
-				boolean ff1 = false;
-				boolean ff2 = false;
-				ff1 = b1[i]->CheckButtonPressed(ec);
+				boolean ff1 = false;					//1st flag to check 1st column
+				boolean ff2 = false;					//second flag to check 2nd column
+				ff1 = b1[i]->CheckButtonPressed(ec);	//the function tells us if the button was pressed
 				ff2 = b2[i]->CheckButtonPressed(ec);
 				
-				if (ff1)
+				if (ff1)								
 				{
-					printf("%d\n", b1[i]->getBNum());
-					b1[i]->illuminate();
+					printf("%d\n", b1[i]->getBNum());	//print the button that was pressed	
+					b1[i]->illuminate();				//illuminate the corresponding button
 				}
 				if (ff2)
 				{
@@ -244,23 +252,25 @@ int main(int argc, char **argv)
 				}
 			}
 
+			//check floor buttons
 			for (int i = 0; i < 10; i++)
 			{
 				boolean ff1 = false;
 				boolean ff2 = false;
-				if (i != 0)
-					ff1 = b3[i]->CheckButtonPressed(ec);
+				if (i != 0)															//1st column has no button on the the last floor 
+					ff1 = b3[i]->CheckButtonPressed(ec);							//check if button pressed in the 1st column
 				if (i != 9)
-					ff2 = b4[i]->CheckButtonPressed(ec);
+					ff2 = b4[i]->CheckButtonPressed(ec);							//second column doesnt have button the first floor
 
 				if (ff1)
 				{
-					printf("(%d,%d)\n", b3[i]->getBNum(), b3[i]->getDirection());
-					b3[i]->illuminate();
+					printf("(%d,%d)\n", b3[i]->getBNum(), b3[i]->getDirection());	//print what floor button was pressed and the corresponding direction
+					b3[i]->illuminate();											//illuminate the button
 				}
 				if (ff2)
 				{
 					printf("(%d,%d)\n", b4[i]->getBNum(), b4[i]->getDirection());
+					//change = true;
 					b4[i]->illuminate();
 				}
 			}
@@ -281,20 +291,24 @@ int main(int argc, char **argv)
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
 
-		printf("%d\n", lift->floorPosition());
+		printf("%d\n", lift->floorPosition());	//Print the current position of the floor
 
-		lift->setDirection(true);
-		lift->setStatus(true);
+		lift->setStatus(true);					//set the lift in motion 
+
+		//if (!change)
+			lift->setDirection(true);				//Set direction to go up
+		//else
+		//	lift->setDirection(false);				//if change in direction, then set direction to down
 
 		if (ev.type == ALLEGRO_EVENT_TIMER)
 		{
-			if (lift->floorPosition() != 5)
+			if (lift->floorPosition() != 10)	//I want the lift to go to the 5th floor
 			{
-				lift->moveUp();
-				lift->moveDown();
-			}
-		}
-
+				lift->moveUp();					//move up 
+				lift->moveDown();				//move down
+			}									//accroding to the direction i have set the lift earlier, the lift will move in that direction								
+		}										//and surpass the other method --> this happens in the methods
+										
 	}
 
 	//while (!doexit)

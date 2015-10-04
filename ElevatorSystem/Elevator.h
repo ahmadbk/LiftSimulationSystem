@@ -45,7 +45,7 @@ public:
 	void moveUp()
 	{
 
-		if (startY - 1 >= 80 && direction)
+		if (startY - 1 >= 80 && direction && status)
 		{
 			al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 0));
 			startY--;
@@ -57,7 +57,7 @@ public:
 
 	void moveDown()
 	{
-		if (startY + 1 <= 620 && !direction)
+		if (startY + 1 <= 620 && !direction && status)
 		{
 			al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 0));
 			startY++;
