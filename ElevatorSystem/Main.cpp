@@ -51,13 +51,12 @@ int main(int argc, char **argv)
 	//create stacks or queues here
 	std::vector<int> upRequestList;
 	std::vector<int> downRequestList;
-	int destination = 0;	// Initial dstination is ground floor
+	int destination = 1;	// Initial dstination is ground floor
 	Button *b1[5];	//1st column - elevator buttons
 	Button *b2[5];	//2nd column - elevator buttons
 	Button *b3[10];	//1st column - floor up buttons
 	Button *b4[10];	//2nd column - floor down buttons
 	Elevator *lift = NULL;
-
 
 	b4[9] = NULL;
 	b3[9] = NULL;
@@ -161,10 +160,10 @@ int main(int argc, char **argv)
 		al_draw_text(font2, al_map_rgb(255, 0, 40), startx + 320, starty, ALLEGRO_ALIGN_LEFT, "OUTSIDE ELEVATOR");
 		al_draw_line(320, 0, 320, 700, al_map_rgb(255, 0, 40), 10);
 
-		if (!makeObjects)								// If elevator has not been created
+		if (!makeObjects)
 		{
-			lift = new Elevator(400, 620, 450, 670);	// Create elevator
-			makeObjects = true;							// Prevents another elevator from being created					
+			lift = new Elevator(400, 620, 450, 670);
+			makeObjects = true;
 		}
 
 		//-----------------------------------------------------------------
@@ -215,16 +214,16 @@ int main(int argc, char **argv)
 		sY = 100;
 		eY = 120;
 		ButtonType = 2;		//Floor Button
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 10; i++)					//Button(startX,startY,endX,endY,height,floor/elevator,floor number/direction)
 		{
 			if (i != 0)
 			{
-				b3[i] = new Button(570, sY, 590, eY, height, ButtonType, (10 - i), true);
+				b3[i] = new Button(570, sY, 590, eY, height, ButtonType, (10 - i), true);			//creates the first column of the floor button excluding last floor
 				al_draw_text(font4, al_map_rgb(0, 0, 255), 576, sY, ALLEGRO_ALIGN_LEFT, "\c");
 			}
 			if (i != 9)
 			{
-				b4[i] = new Button(610, sY, 630, eY, height, ButtonType, (10 - i), false);
+				b4[i] = new Button(610, sY, 630, eY, height, ButtonType, (10 - i), false);			//creates the second column of the floor buttons excluding first floor
 				al_draw_text(font3, al_map_rgb(0, 0, 255), 616, sY, ALLEGRO_ALIGN_LEFT, "D");
 			}
 			sY += 60;
@@ -238,70 +237,77 @@ int main(int argc, char **argv)
 		ALLEGRO_EVENT ec;
 		al_wait_for_event(event_queue, &ec);
 
+		//Two types of buttons: Elevator and Floor 
+		//Each type of buttons have two corresponding array of buttons set in columns on the GUI
+		//Elevator buttons are in b[1] and b[2]
+		//Floor buttons are in b[3] and b[4]
+		//now to check which button was pressed: 1st check if there was a mouse click
+
 		if (ec.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
 		{
-			for (int i = 0; i < 5; i++)					// INSIDE ELEVATOR BUTTONS
+			//check all elevator buttons
+			for (int i = 0; i < 5; i++)
 			{
-				boolean ff1 = false;
-				boolean ff2 = false;
-				ff1 = b1[i]->CheckButtonPressed(ec);	// Look for button presses
+				boolean ff1 = false;					//1st flag to check 1st column
+				boolean ff2 = false;					//second flag to check 2nd column
+				ff1 = b1[i]->CheckButtonPressed(ec);	//the function tells us if the button was pressed
 				ff2 = b2[i]->CheckButtonPressed(ec);
-				
-				if (ff1)								// If there is a button press (INSIDE ELEVATOR)
-				{	
-					printf("%d\n", b1[i]->getBNum());	// Print on console and 
-					b1[i]->illuminate();				// Illuminate the button
-				}
-				if (ff2)								// If there is a button press (OUTSIDE ELEVATOR)
+
+				if (ff1)
 				{
-					printf("%d\n", b2[i]->getBNum());	// Print on console and 
-					b2[i]->illuminate();				// Illuminate the button
+					printf("%d\n", b1[i]->getBNum());	//print the button that was pressed	
+					b1[i]->illuminate();				//illuminate the corresponding button
+				}
+				if (ff2)
+				{
+					printf("%d\n", b2[i]->getBNum());
+					b2[i]->illuminate();
 				}
 			}
 
-			for (int i = 0; i < 10; i++)				// OUTSIDE  ELEVATOR BUTTONS
+			//check floor buttons
+			for (int i = 0; i < 10; i++)
 			{
 				boolean ff1 = false;
 				boolean ff2 = false;
 				bool notPressed = true;
-				if (i != 0)
-					ff1 = b3[i]->CheckButtonPressed(ec);	// Check for UP request
+				if (i != 0)															//1st column has no button on the the last floor 
+					ff1 = b3[i]->CheckButtonPressed(ec);							//check if button pressed in the 1st column
 				if (i != 9)
-					ff2 = b4[i]->CheckButtonPressed(ec);
+					ff2 = b4[i]->CheckButtonPressed(ec);							//second column doesnt have button the first floor
 
 				if (ff1)
 				{
-					printf("(%d,%d)\n", b3[i]->getBNum(), b3[i]->getDirection());
-					b3[i]->illuminate();
+					printf("(%d,%d)\n", b3[i]->getBNum(), b3[i]->getDirection());	//print what floor button was pressed and the corresponding direction
+					b3[i]->illuminate();											//illuminate the button
+					//system("pause");
 
 					for (int a = 0; a < upRequestList.size(); a++)
 					{
-						if (upRequestList[a] == a)
+						if (upRequestList[a] == b3[i]->getBNum())
 							notPressed = false;
 					}
 					if (notPressed = true)									// If this floor has not aleady been pressed
-						upRequestList.push_back(i);							// add it in the reequest list
+						upRequestList.push_back(b3[i]->getBNum());							// add it in the request list
 					std::sort(upRequestList.begin(), upRequestList.end());	// Sort in ascending order
 					destination = lift->destination(upRequestList);			// update destination 
+					//system("pause");
+
 				}
 				if (ff2)
 				{
 					printf("(%d,%d)\n", b4[i]->getBNum(), b4[i]->getDirection());
 					b4[i]->illuminate();
 
-					notPressed = true;
-					for (int a = 0; a < downRequestList.size(); a++)
+					for (int a = 0; a < upRequestList.size(); a++)
 					{
-						if (downRequestList[a] == a)
+						if (downRequestList[a] == b4[i]->getBNum())
 							notPressed = false;
 					}
-					if (notPressed = true)
-						downRequestList.push_back(i);
+					if (notPressed = true)									// If this floor has not aleady been pressed
+						downRequestList.push_back(b4[i]->getBNum());							// add it in the request list
 					std::sort(downRequestList.begin(), downRequestList.end(), std::greater<int>());	// Sort in descending order
-					// destination = lift->destination(downRequestList);
-
-			
-					
+					destination = lift->destination(downRequestList);			// update destination 
 				}
 			}
 
@@ -316,46 +322,51 @@ int main(int argc, char **argv)
 		//-order the queue
 		//-check the direction of the lift
 		//-command the lift to move to desitination
-		//
+
 
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
 
-		printf("%d\n", lift->floorPosition());
-
-		lift->setDirection(true);
-		lift->setStatus(true);
+		printf("%d\n", lift->floorPosition());	//Print the current position of the floor
 
 		if (ev.type == ALLEGRO_EVENT_TIMER)
 		{
-			
-
-			if (lift->floorPosition() < destination)
+			if (lift->floorPosition() != destination)	//I want the lift to go to the 5th floor
 			{
-				lift->moveUp();
-				lift->moveDown();
+				lift->setStatus(true);			//set the lift in motion
+				lift->moveUp();					//move up 
+				lift->moveDown();				//move down
 			}
-
-		}
-
-	}
-
-	while (!doexit)
-	{
-		ALLEGRO_EVENT ev;
-		al_wait_for_event(event_queue, &ev);
-
-		if (ev.type == ALLEGRO_EVENT_TIMER)
-		{
-			//lift->drawElevator(yHeightS + 100, yHeightE + 100);
-		}
-
-		if (redraw && al_is_event_queue_empty(event_queue))
-		{
-			al_flip_display();
-		}
+			else
+			{
+				if (upRequestList.size() >= 1)
+				{
+					//b3[destination]->CancelIlluminate();			// Deluminate the for the request that has been executed
+					upRequestList.erase(upRequestList.begin());	// Remove the request from the list
+				}
+				lift->setStatus(false);
+			}
+			//accroding to the direction i have set the lift earlier, the lift will move in that direction								
+		}										//and surpass the other method --> this happens in the methods
 
 	}
+
+	//while (!doexit)
+	//{
+	//	ALLEGRO_EVENT ev;
+	//	al_wait_for_event(event_queue, &ev);
+
+	//	if (ev.type == ALLEGRO_EVENT_TIMER)
+	//	{
+	//		//lift->drawElevator(yHeightS + 100, yHeightE + 100);
+	//	}
+
+	//	if (redraw && al_is_event_queue_empty(event_queue))
+	//	{
+	//	//	al_flip_display();
+	//	}
+
+	//}
 
 	al_destroy_font(font1);
 	al_destroy_font(font2);

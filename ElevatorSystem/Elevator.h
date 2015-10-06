@@ -94,12 +94,15 @@ public:
 		int destFloor = floor, it = 0;
 		if (reqList.size() > 1)				// This is only done if there are requests in the list
 		{
-			while (it<reqList.size() && destFloor <= reqList[it])	//
+			while (it < reqList.size()) // && floor >= reqList[it])	// Start from the beginning of the vector and search for the closest request to the 
 			{
-				destFloor++;
-				it++;
+				destFloor = reqList[it];													// elevator's current floor
+				if (destFloor <= floor) 
+					it++;
+				else it = reqList.size();		// Force termination
 			}
 		}
+		if (reqList.size() == 1) destFloor = reqList[0];
 		return destFloor;
 	}
 
