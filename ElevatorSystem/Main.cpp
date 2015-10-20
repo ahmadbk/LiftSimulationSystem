@@ -342,10 +342,15 @@ int main(int argc, char **argv)
 			currentRequest = 0;
 			lift->setDirection(false);
 		}
-		if (upRequestList.size() > 0 && upRequestList[0] < lift->floorPosition() && currentRequest != 0)
+		else if (upRequestList.size() > 0 && upRequestList[0] < lift->floorPosition() && currentRequest != 0)
 		{
 			destination = upRequestList[0];
 			currentRequest = 1;
+			lift->setDirection(false);
+		}
+		else if (upRequestList.size() == 0 && downRequestList.size() == 0)
+		{
+			destination = 1;
 			lift->setDirection(false);
 		}
 

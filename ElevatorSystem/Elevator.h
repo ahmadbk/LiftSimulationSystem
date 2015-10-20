@@ -88,46 +88,46 @@ public:
 		return floor;
 	}
 
-	// destination() accepts a vector as an argument and determines which floor to accept a request from. For now onl UP request are executed
-	int destination(std::vector<int> & reqList, int reqType, Elevator& lift)
-	{
-		int destFloor = floor, it = 0;
-		if (reqType == 1)				// If its an up request
-		{
-			if (reqList.size() > 1)				// This is only done if there are requests in the list
-			{
-				while (it < reqList.size()) // && floor >= reqList[it])	// Start from the beginning of the vector and search for the closest request to the 
-				{
-					destFloor = reqList[it];													// elevator's current floor
-					if (destFloor <= floor)
-						it++;
-					else it = reqList.size();		// Force termination
-				}
-			}
-			else if (reqList.size() == 1) destFloor = reqList[0];	// If there is one element in the list, return that element
-			else if (reqList.size() == 0 || it >= reqList.size())
-			{
-				destFloor = -1;			// If there is no element in the list, return an invalid value or next destinstion is not obtained
-				lift.setDirection(false);
-			}
-		}
-		else							// If its a down request
-		{
-			if (reqList.size() > 1)				// This is only done if there are requests in the list
-			{
-				while (it < reqList.size()) // && floor >= reqList[it])	// Start from the beginning of the vector and search for the closest request to the 
-				{
-					destFloor = reqList[it];													// elevator's current floor
-					if (destFloor >= floor)
-						it++;
-					else it = reqList.size();		// Force termination
-				}
-			}
-			else if (reqList.size() == 1) destFloor = reqList[0];	// If there is one element in the list, return that element
-			else if (reqList.size() == 0 || it >= reqList.size()) destFloor = -1;			// If there is no element in the list, return an invalid value or next destinstion is not obtained
-		}
-		return destFloor;
-	}
+	//// destination() accepts a vector as an argument and determines which floor to accept a request from. For now onl UP request are executed
+	//int destination(std::vector<int> & reqList, int reqType, Elevator& lift)
+	//{
+	//	int destFloor = floor, it = 0;
+	//	if (reqType == 1)				// If its an up request
+	//	{
+	//		if (reqList.size() > 1)				// This is only done if there are requests in the list
+	//		{
+	//			while (it < reqList.size()) // && floor >= reqList[it])	// Start from the beginning of the vector and search for the closest request to the 
+	//			{
+	//				destFloor = reqList[it];													// elevator's current floor
+	//				if (destFloor <= floor)
+	//					it++;
+	//				else it = reqList.size();		// Force termination
+	//			}
+	//		}
+	//		else if (reqList.size() == 1) destFloor = reqList[0];	// If there is one element in the list, return that element
+	//		else if (reqList.size() == 0 || it >= reqList.size())
+	//		{
+	//			destFloor = -1;			// If there is no element in the list, return an invalid value or next destinstion is not obtained
+	//			lift.setDirection(false);
+	//		}
+	//	}
+	//	else							// If its a down request
+	//	{
+	//		if (reqList.size() > 1)				// This is only done if there are requests in the list
+	//		{
+	//			while (it < reqList.size()) // && floor >= reqList[it])	// Start from the beginning of the vector and search for the closest request to the 
+	//			{
+	//				destFloor = reqList[it];													// elevator's current floor
+	//				if (destFloor >= floor)
+	//					it++;
+	//				else it = reqList.size();		// Force termination
+	//			}
+	//		}
+	//		else if (reqList.size() == 1) destFloor = reqList[0];	// If there is one element in the list, return that element
+	//		else if (reqList.size() == 0 || it >= reqList.size()) destFloor = -1;			// If there is no element in the list, return an invalid value or next destinstion is not obtained
+	//	}
+	//	return destFloor;
+	//}
 
 };
 
