@@ -19,8 +19,8 @@ private:
 	int startY;
 	int endX;
 	int endY;
-	boolean direction;		//true --> going up		false --> go down
-	bool status;			//true --> moving		flase --> stationary
+	int direction;		//1 --> going up		0 --> go down	-1 --> unallocated
+	bool status;			//true --> moving		false --> stationary
 	int floor;
 
 public:
@@ -31,12 +31,12 @@ public:
 
 	~Elevator(){};
 
-	boolean getDirection()
+	int getDirection()
 	{
 		return direction;
 	}
 
-	void setDirection(boolean d)
+	void setDirection(int d)
 	{
 		direction = d;
 	}
@@ -44,6 +44,11 @@ public:
 	void setStatus(boolean d)
 	{
 		status = d;
+	}
+
+	bool getStatus()
+	{
+		return status;
 	}
 
 	void moveUp()

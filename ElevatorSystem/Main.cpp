@@ -51,6 +51,7 @@ int main(int argc, char **argv)
 	//create stacks or queues here
 	std::vector<int> upRequestList;		// Memory for up and down request lists.
 	std::vector<int> downRequestList;
+	std::vector<int> serviceList;
 	int destination = 1, currentRequest;	// Initial dstination is ground floor
 	Button *b1[5];	//1st column - elevator buttons
 	Button *b2[5];	//2nd column - elevator buttons
@@ -250,6 +251,7 @@ int main(int argc, char **argv)
 			{
 				boolean ff1 = false;					//1st flag to check 1st column
 				boolean ff2 = false;					//second flag to check 2nd column
+				boolean notPressed = true;
 				ff1 = b1[i]->CheckButtonPressed(ec);	//the function tells us if the button was pressed
 				ff2 = b2[i]->CheckButtonPressed(ec);
 
@@ -257,11 +259,36 @@ int main(int argc, char **argv)
 				{
 					printf("%d\n", b1[i]->getBNum());	//print the button that was pressed	
 					b1[i]->illuminate();				//illuminate the corresponding button
+
+					if (serviceList.size() > 0)
+					{
+						for (int a = 0; a < serviceList.size(); a++)
+						{
+							if (serviceList[a] == b1[i]->getBNum())
+								notPressed = false;
+						}
+					}
+					if (notPressed = true)									// If this floor has not aleady been pressed
+						serviceList.push_back(b1[i]->getBNum());							// add it in the request list
+					std::sort(serviceList.begin(), serviceList.end());	// Sort in ascending order
+
 				}
 				if (ff2)
 				{
 					printf("%d\n", b2[i]->getBNum());
 					b2[i]->illuminate();
+
+					if (serviceList.size() > 0)
+					{
+						for (int a = 0; a < serviceList.size(); a++)
+						{
+							if (serviceList[a] == b2[i]->getBNum())
+								notPressed = false;
+						}
+					}
+					if (notPressed = true)									// If this floor has not aleady been pressed
+						serviceList.push_back(b2[i]->getBNum());							// add it in the request list
+					std::sort(serviceList.begin(), serviceList.end());	// Sort in ascending order
 				}
 			}
 
@@ -324,35 +351,79 @@ int main(int argc, char **argv)
 		//-order the queue
 		//-check the direction of the lift
 		//-command the lift to move to desitination
+		//*******************************************************************************************************************************************************************************
+		//*****************************************************************This section is the intelligence of the lift******************************************************************
 		if (upRequestList.size() > 0 && upRequestList[0] > lift->floorPosition() && currentRequest != 0)
 		{
 			destination = upRequestList[0];
 			currentRequest = 1; 
-			lift->setDirection(true);
+			lift->setDirection(1);
 		}
 		else if (downRequestList.size() > 0 && downRequestList[0] > lift->floorPosition() && currentRequest != 1)
 		{
 			destination = downRequestList[0];
 			currentRequest = 0;
-			lift->setDirection(true);
+			lift->setDirection(1);
 		}
 		else if (downRequestList.size() > 0 && downRequestList[0] < lift->floorPosition() && currentRequest != 1)
 		{
 			destination = downRequestList[0];
 			currentRequest = 0;
-			lift->setDirection(false);
+			lift->setDirection(0);
 		}
 		else if (upRequestList.size() > 0 && upRequestList[0] < lift->floorPosition() && currentRequest != 0)
 		{
 			destination = upRequestList[0];
 			currentRequest = 1;
-			lift->setDirection(false);
+			lift->setDirection(0);
 		}
 		else if (upRequestList.size() == 0 && downRequestList.size() == 0)
 		{
 			destination = 1;
-			lift->setDirection(false);
+			lift->setDirection(0);
+			if (lift->getStatus() == false) lift->setDirection(-1);	// If lift is not miving, set direction = unallocated
 		}
+		//*******************************************************************************************************************************************************************************
+		if (serviceList.size() > 0)
+		{
+			// TODO: Figure out the problem with this code
+			if (lift->getDirection() < 0)		// If the direction is unallocated
+			{
+				destination = serviceList[0];
+				if (destination > lift->floorPosition())
+				{
+					lift->setDirection(1);
+					currentRequest = 2;
+				}
+				else if (destination < lift->floorPosition())
+				{
+					lift->setDirection(0);
+					currentRequest = 2;
+				}
+				else if (destination == lift->floorPosition())
+				{
+					serviceList.erase(serviceList.begin());			// Remove the service from the list
+				}
+			}	
+			else if (lift->getDirection() < 0)		// TODO:
+			{
+				/*int potentialDest = value in serviceList > floor
+				if destination > potential
+				destination = potentialDest
+				currentRequest = 2
+				*/
+			}
+			else if (lift->getDirection() < 1)		//
+			{
+				/*int potentialDest = value in serviceList < floor
+				if destination < potential
+				destination = potentialDest
+				currentRequest = 2
+				*/
+			}
+		}
+		//*******************************************************************************************************************************************************************************
+		//*******************************************************************************************************************************************************************************
 
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
@@ -369,7 +440,7 @@ int main(int argc, char **argv)
 			}
 			else
 			{
-				if (upRequestList.size() > 0 || downRequestList.size() > 0)
+				if (upRequestList.size() > 0 || downRequestList.size() > 0) // || serviceList.size() > 0)
 				{
 					// Determine which request was being served and remomove the one that has been executed
 					if (currentRequest == 1)
@@ -377,28 +448,19 @@ int main(int argc, char **argv)
 						upRequestList.erase(upRequestList.begin());			// Remove the request from the list
 						currentRequest = -1;
 					}
-					else
+					else if (currentRequest == 0)
 					{
 						downRequestList.erase(downRequestList.begin());
 						currentRequest = -1;
 					}
+					//else if (currentRequest == 2)
+					//{
+					//	serviceList.erase(serviceList.begin());
+					//	currentRequest = -1;
+					//}
 					al_rest(2.0);
 				}
-				//if (upRequestList.size() >= 1)
-				//{
-				//	//b3[destination]->CancelIlluminate();			// Deluminate the light for the request that has been executed
-				//	upRequestList.erase(upRequestList.begin());	// Remove the request from the list
-				//	destination = lift->destination(upRequestList, 1, *lift);			// update destination 
-				//	al_rest(2.0);
-
-				//	if (destination < 0 && upRequestList.size() > 0)
-				//	{
-				//		if (downRequestList.size() == 0)
-				//			destination = upRequestList[upRequestList.size() - 1];
-				//	}
-				//	if (downRequestList.size() > 0) destination = lift->destination(downRequestList, 0, *lift);
-				//}
-				//lift->setStatus(false);
+				lift->setStatus(false);
 			}
 			//accroding to the direction i have set the lift earlier, the lift will move in that direction								
 		}										//and surpass the other method --> this happens in the methods
