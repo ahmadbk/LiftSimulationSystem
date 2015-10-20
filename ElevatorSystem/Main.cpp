@@ -49,9 +49,9 @@ int main(int argc, char **argv)
 
 
 	//create stacks or queues here
-	std::vector<int> upRequestList;
+	std::vector<int> upRequestList;		// Memory for up and down request lists.
 	std::vector<int> downRequestList;
-	int destination = 1;	// Initial dstination is ground floor
+	int destination = 1, currentRequest;	// Initial dstination is ground floor
 	Button *b1[5];	//1st column - elevator buttons
 	Button *b2[5];	//2nd column - elevator buttons
 	Button *b3[10];	//1st column - floor up buttons
@@ -282,32 +282,34 @@ int main(int argc, char **argv)
 					b3[i]->illuminate();											//illuminate the button
 					//system("pause");
 
-					for (int a = 0; a < upRequestList.size(); a++)
+					if (downRequestList.size() > 0)
 					{
-						if (upRequestList[a] == b3[i]->getBNum())
-							notPressed = false;
+						for (int a = 0; a < upRequestList.size(); a++)
+						{
+							if (upRequestList[a] == b3[i]->getBNum())
+								notPressed = false;
+						}
 					}
 					if (notPressed = true)									// If this floor has not aleady been pressed
 						upRequestList.push_back(b3[i]->getBNum());							// add it in the request list
 					std::sort(upRequestList.begin(), upRequestList.end());	// Sort in ascending order
-					destination = lift->destination(upRequestList);			// update destination 
-					//system("pause");
 
 				}
 				if (ff2)
 				{
 					printf("(%d,%d)\n", b4[i]->getBNum(), b4[i]->getDirection());
 					b4[i]->illuminate();
-
-					for (int a = 0; a < upRequestList.size(); a++)
+					if (downRequestList.size() > 0)
 					{
-						if (downRequestList[a] == b4[i]->getBNum())
-							notPressed = false;
+						for (int a = 0; a < upRequestList.size(); a++)
+						{
+							if (downRequestList[a] == b4[i]->getBNum())
+								notPressed = false;
+						}
 					}
 					if (notPressed = true)									// If this floor has not aleady been pressed
 						downRequestList.push_back(b4[i]->getBNum());							// add it in the request list
 					std::sort(downRequestList.begin(), downRequestList.end(), std::greater<int>());	// Sort in descending order
-					destination = lift->destination(downRequestList);			// update destination 
 				}
 			}
 
@@ -322,7 +324,30 @@ int main(int argc, char **argv)
 		//-order the queue
 		//-check the direction of the lift
 		//-command the lift to move to desitination
-
+		if (upRequestList.size() > 0 && upRequestList[0] > lift->floorPosition() && currentRequest != 0)
+		{
+			destination = upRequestList[0];
+			currentRequest = 1; 
+			lift->setDirection(true);
+		}
+		else if (downRequestList.size() > 0 && downRequestList[0] > lift->floorPosition() && currentRequest != 1)
+		{
+			destination = downRequestList[0];
+			currentRequest = 0;
+			lift->setDirection(true);
+		}
+		else if (downRequestList.size() > 0 && downRequestList[0] < lift->floorPosition() && currentRequest != 1)
+		{
+			destination = downRequestList[0];
+			currentRequest = 0;
+			lift->setDirection(false);
+		}
+		if (upRequestList.size() > 0 && upRequestList[0] < lift->floorPosition() && currentRequest != 0)
+		{
+			destination = upRequestList[0];
+			currentRequest = 1;
+			lift->setDirection(false);
+		}
 
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
@@ -339,12 +364,36 @@ int main(int argc, char **argv)
 			}
 			else
 			{
-				if (upRequestList.size() >= 1)
+				if (upRequestList.size() > 0 || downRequestList.size() > 0)
 				{
-					//b3[destination]->CancelIlluminate();			// Deluminate the for the request that has been executed
-					upRequestList.erase(upRequestList.begin());	// Remove the request from the list
+					// Determine which request was being served and remomove the one that has been executed
+					if (currentRequest == 1)
+					{
+						upRequestList.erase(upRequestList.begin());			// Remove the request from the list
+						currentRequest = -1;
+					}
+					else
+					{
+						downRequestList.erase(downRequestList.begin());
+						currentRequest = -1;
+					}
+					al_rest(2.0);
 				}
-				lift->setStatus(false);
+				//if (upRequestList.size() >= 1)
+				//{
+				//	//b3[destination]->CancelIlluminate();			// Deluminate the light for the request that has been executed
+				//	upRequestList.erase(upRequestList.begin());	// Remove the request from the list
+				//	destination = lift->destination(upRequestList, 1, *lift);			// update destination 
+				//	al_rest(2.0);
+
+				//	if (destination < 0 && upRequestList.size() > 0)
+				//	{
+				//		if (downRequestList.size() == 0)
+				//			destination = upRequestList[upRequestList.size() - 1];
+				//	}
+				//	if (downRequestList.size() > 0) destination = lift->destination(downRequestList, 0, *lift);
+				//}
+				//lift->setStatus(false);
 			}
 			//accroding to the direction i have set the lift earlier, the lift will move in that direction								
 		}										//and surpass the other method --> this happens in the methods
