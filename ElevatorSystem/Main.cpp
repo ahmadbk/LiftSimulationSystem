@@ -404,8 +404,24 @@ int main(int argc, char **argv)
 					serviceList.erase(serviceList.begin());			// Remove the service from the list
 				}
 			}	
-			else if (lift->getDirection() == 1)		// TODO:
+			else if (lift->getDirection() == 1)		// If lift is moving up
 			{
+				int potentialDest, it = 0;
+				if (serviceList.size() > 1)				// This is only done if there are 2 or more requests in the list
+				{
+					while (it < serviceList.size()) // && floor >= reqList[it])	// Start from the beginning of the vector and search for the closest request to the 
+					{
+						potentialDest = serviceList[it];													// elevator's current floor
+						if (potentialDest < lift->floorPosition())
+							it++;
+						else
+						{
+							destination = potentialDest;
+							currentRequest = 2;
+							it = serviceList.size();		// Force termination
+						}
+					}
+				}
 				/*int potentialDest = value in serviceList > floor
 				if destination > potential
 				destination = potentialDest
@@ -454,8 +470,16 @@ int main(int argc, char **argv)
 					}
 					else if (currentRequest == 2)
 					{
-						serviceList.erase(serviceList.begin());
-						currentRequest = -1;
+						int a = 0;
+						while (a < serviceList.size())
+						{
+							if (destination == serviceList[a])
+							{
+								serviceList.erase(serviceList.begin()+a);
+								a = serviceList.size();
+								currentRequest = -1;
+							}
+						}
 					}
 					al_rest(2.0);
 				}
