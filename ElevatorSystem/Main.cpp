@@ -377,7 +377,7 @@ int main(int argc, char **argv)
 			currentRequest = 1;
 			lift->setDirection(0);
 		}
-		else if (upRequestList.size() == 0 && downRequestList.size() == 0)
+		else if (upRequestList.size() == 0 && downRequestList.size() == 0 && serviceList.size() == 0)
 		{
 			destination = 1;
 			lift->setDirection(0);
@@ -395,17 +395,17 @@ int main(int argc, char **argv)
 					lift->setDirection(1);
 					currentRequest = 2;
 				}
-				else if (destination < lift->floorPosition())
-				{
-					lift->setDirection(0);
-					currentRequest = 2;
-				}
-				else if (destination == lift->floorPosition())
-				{
-					serviceList.erase(serviceList.begin());			// Remove the service from the list
-				}
+				//else if (destination < lift->floorPosition())
+				//{
+				//	lift->setDirection(0);
+				//	currentRequest = 2;
+				//}
+				//else if (destination == lift->floorPosition())
+				//{
+				//	serviceList.erase(serviceList.begin());			// Remove the service from the list
+				//}
 			}	
-			else if (lift->getDirection() < 0)		// TODO:
+			else if (lift->getDirection() == 1)		// TODO:
 			{
 				/*int potentialDest = value in serviceList > floor
 				if destination > potential
@@ -413,7 +413,7 @@ int main(int argc, char **argv)
 				currentRequest = 2
 				*/
 			}
-			else if (lift->getDirection() < 1)		//
+			else if (lift->getDirection() == 0)		//
 			{
 				/*int potentialDest = value in serviceList < floor
 				if destination < potential
@@ -440,24 +440,24 @@ int main(int argc, char **argv)
 			}
 			else
 			{
-				if (upRequestList.size() > 0 || downRequestList.size() > 0) // || serviceList.size() > 0)
+				if (upRequestList.size() > 0 || downRequestList.size() > 0 || serviceList.size() > 0)
 				{
 					// Determine which request was being served and remomove the one that has been executed
-					if (currentRequest == 1)
-					{
-						upRequestList.erase(upRequestList.begin());			// Remove the request from the list
-						currentRequest = -1;
-					}
-					else if (currentRequest == 0)
+					if (currentRequest == 0)
 					{
 						downRequestList.erase(downRequestList.begin());
 						currentRequest = -1;
 					}
-					//else if (currentRequest == 2)
-					//{
-					//	serviceList.erase(serviceList.begin());
-					//	currentRequest = -1;
-					//}
+					else if (currentRequest == 1)
+					{
+						upRequestList.erase(upRequestList.begin());			// Remove the request from the list
+						currentRequest = -1;
+					}
+					else if (currentRequest == 2)
+					{
+						serviceList.erase(serviceList.begin());
+						currentRequest = -1;
+					}
 					al_rest(2.0);
 				}
 				lift->setStatus(false);
