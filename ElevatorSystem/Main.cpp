@@ -386,7 +386,6 @@ int main(int argc, char **argv)
 		//*******************************************************************************************************************************************************************************
 		if (serviceList.size() > 0)
 		{
-			// TODO: Figure out the problem with this code
 			if (lift->getDirection() < 0)		// If the direction is unallocated
 			{
 				destination = serviceList[0];
@@ -395,15 +394,15 @@ int main(int argc, char **argv)
 					lift->setDirection(1);
 					currentRequest = 2;
 				}
-				//else if (destination < lift->floorPosition())
-				//{
-				//	lift->setDirection(0);
-				//	currentRequest = 2;
-				//}
-				//else if (destination == lift->floorPosition())
-				//{
-				//	serviceList.erase(serviceList.begin());			// Remove the service from the list
-				//}
+				else if (destination < lift->floorPosition())
+				{
+					lift->setDirection(0);
+					currentRequest = 2;
+				}
+				else if (destination == lift->floorPosition())
+				{
+					serviceList.erase(serviceList.begin());			// Remove the service from the list
+				}
 			}	
 			else if (lift->getDirection() == 1)		// TODO:
 			{
