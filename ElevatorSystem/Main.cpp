@@ -422,14 +422,35 @@ int main(int argc, char **argv)
 						}
 					}
 				}
-				/*int potentialDest = value in serviceList > floor
-				if destination > potential
-				destination = potentialDest
-				currentRequest = 2
-				*/
+				else if (serviceList[0] > lift->floorPosition())
+				{
+					destination = serviceList[0];
+					currentRequest = 2;
+				}
 			}
 			else if (lift->getDirection() == 0)		//
 			{
+				int potentialDest, it = 0;
+				if (serviceList.size() > 1)				// This is only done if there are 2 or more requests in the list
+				{
+					while (it < serviceList.size()) // && floor >= reqList[it])	// Start from the beginning of the vector and search for the closest request to the 
+					{
+						potentialDest = serviceList[it];													// elevator's current floor
+						if (potentialDest > lift->floorPosition())
+							it++;
+						else
+						{
+							destination = potentialDest;
+							currentRequest = 2;
+							it = serviceList.size();		// Force termination
+						}
+					}
+				}
+				else if (serviceList[0] < lift->floorPosition())
+				{
+					destination = serviceList[0];
+					currentRequest = 2;
+				}
 				/*int potentialDest = value in serviceList < floor
 				if destination < potential
 				destination = potentialDest
@@ -481,7 +502,7 @@ int main(int argc, char **argv)
 							}
 						}
 					}
-					al_rest(2.0);
+					al_rest(5.0);
 				}
 				lift->setStatus(false);
 			}
