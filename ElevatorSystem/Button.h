@@ -7,6 +7,9 @@
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 
+//Ahmad Bin Khalid
+//Sesethu Mhlana
+
 class Button
 {
 private:
