@@ -13,9 +13,8 @@
 #include <string>
 #include <vector>
 #include <algorithm>    // For std::sort
-#include <functional>	// For comparison with greator
-#include <stdio.h>     
-#include <time.h>
+#include <functional>	// For comparison with greator    
+#include <time.h>		// To create delay for opening doors
 
 #include "Button.h"
 #include "Elevator.h"
@@ -57,7 +56,7 @@ int main(int argc, char **argv)
 	int destination = 1, currentRequest;	// Initial dstination is ground floor
 	time_t now;
 	struct tm newyear;
-	double startSeconds, currentSeconds;
+	double startSeconds, currentSeconds;	// Seconds for door open
 	Button *b1[5];	//1st column - elevator buttons
 	Button *b2[5];	//2nd column - elevator buttons
 	Button *b3[10];	//1st column - floor up buttons
@@ -269,7 +268,7 @@ int main(int argc, char **argv)
 					{
 						for (int a = 0; a < serviceList.size(); a++)
 						{
-							if (serviceList[a] == b1[i]->getBNum())
+							if (serviceList[a] == b1[i]->getBNum())			// Check if button has already been pressed
 								notPressed = false;
 						}
 					}
@@ -287,7 +286,7 @@ int main(int argc, char **argv)
 					{
 						for (int a = 0; a < serviceList.size(); a++)
 						{
-							if (serviceList[a] == b2[i]->getBNum())
+							if (serviceList[a] == b2[i]->getBNum())		// Check if button has already been pressed
 								notPressed = false;
 						}
 					}
@@ -312,13 +311,12 @@ int main(int argc, char **argv)
 				{
 					printf("(%d,%d)\n", b3[i]->getBNum(), b3[i]->getDirection());	//print what floor button was pressed and the corresponding direction
 					b3[i]->illuminate();											//illuminate the button
-					//system("pause");
 
 					if (downRequestList.size() > 0)
 					{
 						for (int a = 0; a < upRequestList.size(); a++)
 						{
-							if (upRequestList[a] == b3[i]->getBNum())
+							if (upRequestList[a] == b3[i]->getBNum())		// Check if button has already been pressed
 								notPressed = false;
 						}
 					}
@@ -335,7 +333,7 @@ int main(int argc, char **argv)
 					{
 						for (int a = 0; a < upRequestList.size(); a++)
 						{
-							if (downRequestList[a] == b4[i]->getBNum())
+							if (downRequestList[a] == b4[i]->getBNum())		// Check if button has already been pressed
 								notPressed = false;
 						}
 					}
@@ -358,109 +356,104 @@ int main(int argc, char **argv)
 		//-command the lift to move to desitination
 		//*******************************************************************************************************************************************************************************
 		//*****************************************************************This section is the intelligence of the lift******************************************************************
-		if (upRequestList.size() > 0 && upRequestList[0] > lift->floorPosition() && currentRequest != 0)
-		{
-			destination = upRequestList[0];
-			currentRequest = 1; 
-			lift->setDirection(1);
+		if (upRequestList.size() > 0 && upRequestList[0] > lift->floorPosition() && currentRequest != 0)					// If there is an up request, the first request in the list  
+		{																													// is above elevator floor, and current request is not a down request
+			destination = upRequestList[0];																					// The new destination will be the first request in the list
+			currentRequest = 1;																								// currentRequest is an up request
+			lift->setDirection(1);																							// direction is up
 		}
-		else if (downRequestList.size() > 0 && downRequestList[0] > lift->floorPosition() && currentRequest != 1)
-		{
-			destination = downRequestList[0];
-			currentRequest = 0;
-			lift->setDirection(1);
+		else if (downRequestList.size() > 0 && downRequestList[0] > lift->floorPosition() && currentRequest != 1)			// If there is a down request, the first request in the list 
+		{																													// is greater than the elevator floor, and current request is not an up request
+			destination = downRequestList[0];																				// The new destination will be the first request in the list
+			currentRequest = 0;																								// currentRequest is a down request
+			lift->setDirection(1);																							// direction is down
 		}
-		else if (downRequestList.size() > 0 && downRequestList[0] < lift->floorPosition() && currentRequest != 1)
-		{
-			destination = downRequestList[0];
-			currentRequest = 0;
-			lift->setDirection(0);
+		else if (downRequestList.size() > 0 && downRequestList[0] < lift->floorPosition() && currentRequest != 1)			// If there is a down request, the first request in the list 
+		{																													// is below elevator floor, and current request is not an up request
+			destination = downRequestList[0];																				// The new destination will be the first request in the list
+			currentRequest = 0;																								// currentRequest i a down request
+			lift->setDirection(0);																							// direction is down
 		}
-		else if (upRequestList.size() > 0 && upRequestList[0] < lift->floorPosition() && currentRequest != 0)
-		{
-			destination = upRequestList[0];
-			currentRequest = 1;
-			lift->setDirection(0);
+		else if (upRequestList.size() > 0 && upRequestList[0] < lift->floorPosition() && currentRequest != 0)				// If there is an up request, the first request in the list 
+		{																													// is below elevator floor, and current request is not a down request
+			destination = upRequestList[0];																					// The new destination will be the first request in the list
+			currentRequest = 1;																								// currentRequest is an up request
+			lift->setDirection(0);																							// direction is down
 		}
-		else if (upRequestList.size() == 0 && downRequestList.size() == 0 && serviceList.size() == 0)
-		{
-			destination = 1;
-			lift->setDirection(0);
-			if (lift->getStatus() == false) lift->setDirection(-1);	// If lift is not miving, set direction = unallocated
+		else if (upRequestList.size() == 0 && downRequestList.size() == 0 && serviceList.size() == 0)						// If there is no up request, no dwon request and no service requested (inside) 
+		{																													// The new destination is ground floor
+			destination = 1;																								// 
+			lift->setDirection(0);																							// Direction is down
+			if (lift->getStatus() == false) lift->setDirection(-1);	// If lift is not miving, set direction = unallocated i.e stay still on ground floor
 		}
 		//*******************************************************************************************************************************************************************************
-		if (serviceList.size() > 0)
+		if (serviceList.size() > 0)										// If there is a request from inside the lift
 		{
-			if (lift->getDirection() < 0)		// If the direction is unallocated
+			if (lift->getDirection() < 0)								// If the direction is unallocated
 			{
-				destination = serviceList[0];
-				if (destination > lift->floorPosition())
+				destination = serviceList[0];							// The destination is the first request in the service list
+				if (destination > lift->floorPosition())				// If the destination is above the elevator floor
 				{
-					lift->setDirection(1);
-					currentRequest = 2;
+					lift->setDirection(1);								// Direction is up
+					currentRequest = 2;									// and current request is a service request (inside lift)
 				}
-				else if (destination < lift->floorPosition())
+				else if (destination < lift->floorPosition())			// If the destination is below elevator position 
 				{
-					lift->setDirection(0);
-					currentRequest = 2;
+					lift->setDirection(0);								// The direction is down
+					currentRequest = 2;									// and current request is a service request (inside lift)
 				}
-				else if (destination == lift->floorPosition())
+				else if (destination == lift->floorPosition())			// If the destination is on the same floor as the elevator, remove it from the list
 				{
-					serviceList.erase(serviceList.begin());			// Remove the service from the list
+					serviceList.erase(serviceList.begin());				// Remove the service from the list
 				}
 			}	
-			else if (lift->getDirection() == 1)		// If lift is moving up
+			else if (lift->getDirection() == 1)							// If lift is moving up
 			{
-				int potentialDest, it = 0;
-				if (serviceList.size() > 1)				// This is only done if there are 2 or more requests in the list
-				{
-					while (it < serviceList.size()) // && floor >= reqList[it])	// Start from the beginning of the vector and search for the closest request to the 
+				int potentialDest, it = 0;								// The potentialDest is a destination that we might use as the destination given the following conditions
+				if (serviceList.size() > 1)								// This is only done if there are 2 or more requests in the list
+				{														// Start from the beginning of the vector and search for the closest request to the elevator floor
+					while (it < serviceList.size())						// it is an iterator that goes from beginning of the vector to the end  
 					{
-						potentialDest = serviceList[it];													// elevator's current floor
-						if (potentialDest < lift->floorPosition())
-							it++;
+						potentialDest = serviceList[it];				// Sample each element in the list and test 
+						if (potentialDest < lift->floorPosition())		// If potentialDest is below elevator position
+							it++;										// move on to the next element 
 						else
 						{
-							destination = potentialDest;
-							currentRequest = 2;
-							it = serviceList.size();		// Force termination
+							destination = potentialDest;				// If the potentialDest is not below lift floor use potentialDest as the destination
+							currentRequest = 2;							// currentRequest is a service request
+							it = serviceList.size();					// Force the loop to terminate because we have the required results
 						}
 					}
 				}
-				else if (serviceList[0] > lift->floorPosition())
-				{
-					destination = serviceList[0];
-					currentRequest = 2;
+				else if (serviceList[0] > lift->floorPosition())		// If the first request in the list is above the elevator floor
+				{														// 
+					destination = serviceList[0];						// The destination is the first element in the list
+					currentRequest = 2;									// currentRequest in a service request
 				}
 			}
-			else if (lift->getDirection() == 0)		//
+			else if (lift->getDirection() == 0)							// If the lift direction is down
 			{
-				int potentialDest, it = 0;
-				if (serviceList.size() > 1)				// This is only done if there are 2 or more requests in the list
+				int potentialDest, it = 0;								// 
+				if (serviceList.size() > 1)								// This is only done if there are 2 or more requests in the list
 				{
-					while (it < serviceList.size()) // && floor >= reqList[it])	// Start from the beginning of the vector and search for the closest request to the 
-					{
-						potentialDest = serviceList[it];													// elevator's current floor
-						if (potentialDest > lift->floorPosition())
-							it++;
-						else
+					while (it < serviceList.size())						// Start from the beginning of the vector and search for the closest request to the elevator floor 
+					{													// it is an iterator that goes from beginning of the vector to the end  
+						potentialDest = serviceList[it];
+						if (potentialDest > lift->floorPosition())		// Sample each element in the list and test 
+							it++;										// If potentialDest is above elevator position
+						else											// move on to the next element 
 						{
-							destination = potentialDest;
-							currentRequest = 2;
-							it = serviceList.size();		// Force termination
-						}
+							destination = potentialDest;				// If the potentialDest is not below lift floor use potentialDest as the destination
+							currentRequest = 2;							// currentRequest is a service requestmination
+							it = serviceList.size();					// Force the loop to terminate because we have the required results
+						}												
 					}
 				}
-				else if (serviceList[0] < lift->floorPosition())
+				else if (serviceList[0] < lift->floorPosition())		// If the first request in the list is below elevator floor
 				{
-					destination = serviceList[0];
-					currentRequest = 2;
+					destination = serviceList[0];						// The destination is that request
+					currentRequest = 2;									// Current request is a servive request
 				}
-				/*int potentialDest = value in serviceList < floor
-				if destination < potential
-				destination = potentialDest
-				currentRequest = 2
-				*/
 			}
 		}
 		//*******************************************************************************************************************************************************************************
@@ -473,61 +466,60 @@ int main(int argc, char **argv)
 
 		if (ev.type == ALLEGRO_EVENT_TIMER)
 		{
-			if (lift->floorPosition() != destination)	//I want the lift to go to the 5th floor
-			{
-				time(&now);  /* get current time; same as: now = time(NULL)  */
-				localtime_s(&newyear, &now);
+			if (lift->floorPosition() != destination)								// Keep doing tis if the elevator floor has not reached the destination
+			{																		// To set the 10 second delay, we do the following
+				time(&now);															// get current time (system time) 
+				localtime_s(&newyear, &now);										// 
 				newyear.tm_hour = 0; newyear.tm_min = 0; newyear.tm_sec = 0;
 				newyear.tm_mon = 0;  newyear.tm_mday = 1;
 
-				currentSeconds = difftime(now, mktime(&newyear));
-				if (currentSeconds >= startSeconds + 3)
-				{
+				currentSeconds = difftime(now, mktime(&newyear));					// These are the seconds that have passed since new year
+				if (currentSeconds >= startSeconds + 3)								// The currentSeconds are the seconds from new year sampled when the elevator reaches its destination
+				{																	// To set the delay to 10s, add 10 to startSeconds
+
+					// This part only happens after 10 seconds since the destination was reached, this creates the 10s delay
 					lift->setStatus(true);			//set the lift in motion
 					lift->moveUp();					//move up 
 					lift->moveDown();				//move down
 				}
 			}
 			else
-			{
-				if (upRequestList.size() > 0 || downRequestList.size() > 0 || serviceList.size() > 0)
+			{	// If the destination has been reached
+				if (upRequestList.size() > 0 || downRequestList.size() > 0 || serviceList.size() > 0)		// If there is an up request or down request or a service request
 				{
 					// Determine which request was being served and remomove the one that has been executed
 					if (currentRequest == 0)
 					{
-						downRequestList.erase(downRequestList.begin());
-						currentRequest = -1;
+						downRequestList.erase(downRequestList.begin());		// Remove the request from the list
+						currentRequest = -1;								// and set the current request to unalocated
 					}
 					else if (currentRequest == 1)
 					{
-						upRequestList.erase(upRequestList.begin());			// Remove the request from the list
+						upRequestList.erase(upRequestList.begin());			
 						currentRequest = -1;
 					}
 					else if (currentRequest == 2)
 					{
-						int a = 0;
-						while (a < serviceList.size())
+						int a = 0; // a will be the iterator
+						while (a < serviceList.size())						
 						{
-							if (destination == serviceList[a])
+							if (destination == serviceList[a])				// Find the service request in the service list that was executed
 							{
-								serviceList.erase(serviceList.begin()+a);
-								a = serviceList.size();
-								currentRequest = -1;
+								serviceList.erase(serviceList.begin()+a);	// Remove the request from the list
+								a = serviceList.size();						// Force the loop to terminate 
+								currentRequest = -1;						// and set the current request to unalocated
 							}
 						}
 					}
-					//al_rest(5.0);
 				}
 				lift->setStatus(false);
 
-				time(&now);  /* get current time; same as: now = time(NULL)  */
-
+				time(&now);  
 				localtime_s(&newyear, &now);
-
 				newyear.tm_hour = 0; newyear.tm_min = 0; newyear.tm_sec = 0;
 				newyear.tm_mon = 0;  newyear.tm_mday = 1;
 
-				startSeconds = difftime(now, mktime(&newyear));
+				startSeconds = difftime(now, mktime(&newyear));				// Get the seconds when the the destination was reached
 			}
 			//accroding to the direction i have set the lift earlier, the lift will move in that direction								
 		}										//and surpass the other method --> this happens in the methods
