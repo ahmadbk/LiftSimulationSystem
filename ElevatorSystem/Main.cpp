@@ -168,8 +168,6 @@ int main(int argc, char **argv)
 		if (!makeObjects)
 		{
 			lift = new Elevator(400, 620, 450, 670);
-			makeObjects = true;
-		}
 
 		//-----------------------------------------------------------------
 
@@ -178,28 +176,35 @@ int main(int argc, char **argv)
 		int eY = 100;
 		int height = 2;
 		ButtonType = 1;		//Elevator Button
-		for (int i = 0; i < 5; i++)
-		{
-			b1[i] = new Button(70, sY, 100, eY, height, ButtonType, (i + 1));
-			int a = i + 1;
-			char *c = (char*)a;
-			al_draw_text(font1, al_map_rgb(0, 0, 255), 80, sY, ALLEGRO_ALIGN_LEFT, "1");
-			sY += 50;
-			eY += 50;
-		}
+
+
+			for (int i = 0; i < 5; i++)
+			{
+				b1[i] = new Button(70, sY, 100, eY, height, ButtonType, (i + 1));
+				int a = i + 1;
+				char c = (char)a;
+				const char *c1 = &c;
+				al_draw_text(font1, al_map_rgb(0, 0, 255), 80, sY, ALLEGRO_ALIGN_LEFT, c1);
+				sY += 50;
+				eY += 50;
+			}
 
 		//------------------------------------------------------------------
 
 		//2nd Column of blocks outside lift
 		sY = 70;
 		eY = 100;
-		for (int i = 0; i < 5; i++)
-		{
-			b2[i] = new Button(150, sY, 180, eY, height, ButtonType, (i + 1 + 5));
-			al_draw_text(font1, al_map_rgb(0, 0, 255), 160, sY, ALLEGRO_ALIGN_LEFT, "2");
-			sY += 50;
-			eY += 50;
-		}
+
+			for (int i = 0; i < 5; i++)
+			{
+				b2[i] = new Button(150, sY, 180, eY, height, ButtonType, (i + 1 + 5));
+				int a = i + 1 + 5;
+				char c = (char)a;
+				const char *c1 = &c;
+				al_draw_text(font1, al_map_rgb(0, 0, 255), 160, sY, ALLEGRO_ALIGN_LEFT, c1);
+				sY += 50;
+				eY += 50;
+			}
 
 		//------------------------------------------------------------------
 
@@ -219,21 +224,26 @@ int main(int argc, char **argv)
 		sY = 100;
 		eY = 120;
 		ButtonType = 2;		//Floor Button
-		for (int i = 0; i < 10; i++)					//Button(startX,startY,endX,endY,height,floor/elevator,floor number/direction)
-		{
-			if (i != 0)
+
+			for (int i = 0; i < 10; i++)					//Button(startX,startY,endX,endY,height,floor/elevator,floor number/direction)
 			{
-				b3[i] = new Button(570, sY, 590, eY, height, ButtonType, (10 - i), true);			//creates the first column of the floor button excluding last floor
-				al_draw_text(font4, al_map_rgb(0, 0, 255), 576, sY, ALLEGRO_ALIGN_LEFT, "\c");
+				if (i != 0)
+				{
+					b3[i] = new Button(570, sY, 590, eY, height, ButtonType, (10 - i), true);			//creates the first column of the floor button excluding last floor
+					al_draw_text(font4, al_map_rgb(0, 0, 255), 576, sY, ALLEGRO_ALIGN_LEFT, "U");
+				}
+				if (i != 9)
+				{
+					b4[i] = new Button(610, sY, 630, eY, height, ButtonType, (10 - i), false);			//creates the second column of the floor buttons excluding first floor
+					al_draw_text(font3, al_map_rgb(0, 0, 255), 616, sY, ALLEGRO_ALIGN_LEFT, "D");
+				}
+				sY += 60;
+				eY += 60;
 			}
-			if (i != 9)
-			{
-				b4[i] = new Button(610, sY, 630, eY, height, ButtonType, (10 - i), false);			//creates the second column of the floor buttons excluding first floor
-				al_draw_text(font3, al_map_rgb(0, 0, 255), 616, sY, ALLEGRO_ALIGN_LEFT, "D");
-			}
-			sY += 60;
-			eY += 60;
-		}
+
+			makeObjects = true;
+
+		}//end of if statement to ensure objects are created only once
 
 		//------------------------------------------------------------------
 
@@ -256,9 +266,12 @@ int main(int argc, char **argv)
 				boolean ff1 = false;					//1st flag to check 1st column
 				boolean ff2 = false;					//second flag to check 2nd column
 				boolean notPressed = true;
-				ff1 = b1[i]->CheckButtonPressed(ec);	//the function tells us if the button was pressed
-				ff2 = b2[i]->CheckButtonPressed(ec);
-				
+				if (ec.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
+					if (ec.mouse.x >= 70 && ec.mouse.x <= 100)
+						ff1 = b1[i]->CheckButtonPressed(ec);	//the function tells us if the button was pressed
+					if (ec.mouse.x >= 150 && ec.mouse.x <= 180)
+						ff2 = b2[i]->CheckButtonPressed(ec);
+				}
 				if (ff1)
 				{
 					printf("%d\n", b1[i]->getBNum());	//print the button that was pressed	
@@ -302,10 +315,20 @@ int main(int argc, char **argv)
 				boolean ff1 = false;
 				boolean ff2 = false;
 				bool notPressed = true;
-				if (i != 0)															//1st column has no button on the the last floor 
-					ff1 = b3[i]->CheckButtonPressed(ec);							//check if button pressed in the 1st column
-				if (i != 9)
-					ff2 = b4[i]->CheckButtonPressed(ec);							//second column doesnt have button the first floor
+
+				if (ec.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
+				{
+					if (i != 0)															//1st column has no button on the the last floor 
+					{
+						if (ec.mouse.x >= 570 && ec.mouse.x <= 590)
+							ff1 = b3[i]->CheckButtonPressed(ec);							//check if button pressed in the 1st column
+					}
+					if (i != 9)
+					{
+						if (ec.mouse.x >= 610 && ec.mouse.x <= 630)
+							ff2 = b4[i]->CheckButtonPressed(ec);							//second column doesnt have button the first floor
+					}
+				}
 
 				if (ff1)
 				{
