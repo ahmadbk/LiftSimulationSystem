@@ -7,6 +7,10 @@
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 
+#include <vector>
+#include <algorithm>    // For std::sort
+#include <functional>	// For comparison with greator
+
 class Elevator
 {
 private:
@@ -15,9 +19,9 @@ private:
 	int startY;
 	int endX;
 	int endY;
-	boolean direction;		//true --> going up		false --> go down
-	bool status;			//true --> moving		flase --> stationery
-	int floor;		
+	int direction;		//1 --> going up		0 --> go down	-1 --> unallocated
+	bool status;			//true --> moving		false --> stationary
+	int floor;
 
 public:
 	Elevator(int sX, int sY, int eX, int eY) :startX(sX), startY(sY), endX(eX), endY(eY)
@@ -27,12 +31,12 @@ public:
 
 	~Elevator(){};
 
-	boolean getDirection()
+	int getDirection()
 	{
 		return direction;
 	}
 
-	void setDirection(boolean d)
+	void setDirection(int d)
 	{
 		direction = d;
 	}
@@ -40,6 +44,11 @@ public:
 	void setStatus(boolean d)
 	{
 		status = d;
+	}
+
+	bool getStatus()
+	{
+		return status;
 	}
 
 	void moveUp()
@@ -83,6 +92,47 @@ public:
 			floor = temp;
 		return floor;
 	}
+
+	//// destination() accepts a vector as an argument and determines which floor to accept a request from. For now onl UP request are executed
+	//int destination(std::vector<int> & reqList, int reqType, Elevator& lift)
+	//{
+	//	int destFloor = floor, it = 0;
+	//	if (reqType == 1)				// If its an up request
+	//	{
+	//		if (reqList.size() > 1)				// This is only done if there are requests in the list
+	//		{
+	//			while (it < reqList.size()) // && floor >= reqList[it])	// Start from the beginning of the vector and search for the closest request to the 
+	//			{
+	//				destFloor = reqList[it];													// elevator's current floor
+	//				if (destFloor <= floor)
+	//					it++;
+	//				else it = reqList.size();		// Force termination
+	//			}
+	//		}
+	//		else if (reqList.size() == 1) destFloor = reqList[0];	// If there is one element in the list, return that element
+	//		else if (reqList.size() == 0 || it >= reqList.size())
+	//		{
+	//			destFloor = -1;			// If there is no element in the list, return an invalid value or next destinstion is not obtained
+	//			lift.setDirection(false);
+	//		}
+	//	}
+	//	else							// If its a down request
+	//	{
+	//		if (reqList.size() > 1)				// This is only done if there are requests in the list
+	//		{
+	//			while (it < reqList.size()) // && floor >= reqList[it])	// Start from the beginning of the vector and search for the closest request to the 
+	//			{
+	//				destFloor = reqList[it];													// elevator's current floor
+	//				if (destFloor >= floor)
+	//					it++;
+	//				else it = reqList.size();		// Force termination
+	//			}
+	//		}
+	//		else if (reqList.size() == 1) destFloor = reqList[0];	// If there is one element in the list, return that element
+	//		else if (reqList.size() == 0 || it >= reqList.size()) destFloor = -1;			// If there is no element in the list, return an invalid value or next destinstion is not obtained
+	//	}
+	//	return destFloor;
+	//}
 
 };
 

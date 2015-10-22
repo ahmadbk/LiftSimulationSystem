@@ -44,7 +44,7 @@ public:
 	boolean CheckButtonPressed(ALLEGRO_EVENT ec)
 	{
 		if (ec.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
-			if (ec.mouse.x >= startX && ec.mouse.x <= endX && ec.mouse.y >= startY && ec.mouse.y < endY)
+			if (ec.mouse.x >= startX && ec.mouse.x <= endX && ec.mouse.y >= startY && ec.mouse.y < endY)	// If mouse presses is within these bounds, then choose button x
 				buttonPressed = true;
 			else
 				buttonPressed = false;
