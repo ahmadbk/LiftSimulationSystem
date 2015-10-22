@@ -14,6 +14,8 @@
 #include <vector>
 #include <algorithm>    // For std::sort
 #include <functional>	// For comparison with greator
+#include <stdio.h>     
+#include <time.h>
 
 #include "Button.h"
 #include "Elevator.h"
@@ -53,6 +55,9 @@ int main(int argc, char **argv)
 	std::vector<int> downRequestList;
 	std::vector<int> serviceList;
 	int destination = 1, currentRequest;	// Initial dstination is ground floor
+	time_t now;
+	struct tm newyear;
+	double startSeconds, currentSeconds;
 	Button *b1[5];	//1st column - elevator buttons
 	Button *b2[5];	//2nd column - elevator buttons
 	Button *b3[10];	//1st column - floor up buttons
@@ -470,9 +475,18 @@ int main(int argc, char **argv)
 		{
 			if (lift->floorPosition() != destination)	//I want the lift to go to the 5th floor
 			{
-				lift->setStatus(true);			//set the lift in motion
-				lift->moveUp();					//move up 
-				lift->moveDown();				//move down
+				time(&now);  /* get current time; same as: now = time(NULL)  */
+				localtime_s(&newyear, &now);
+				newyear.tm_hour = 0; newyear.tm_min = 0; newyear.tm_sec = 0;
+				newyear.tm_mon = 0;  newyear.tm_mday = 1;
+
+				currentSeconds = difftime(now, mktime(&newyear));
+				if (currentSeconds >= startSeconds + 3)
+				{
+					lift->setStatus(true);			//set the lift in motion
+					lift->moveUp();					//move up 
+					lift->moveDown();				//move down
+				}
 			}
 			else
 			{
@@ -502,9 +516,18 @@ int main(int argc, char **argv)
 							}
 						}
 					}
-					al_rest(5.0);
+					//al_rest(5.0);
 				}
 				lift->setStatus(false);
+
+				time(&now);  /* get current time; same as: now = time(NULL)  */
+
+				localtime_s(&newyear, &now);
+
+				newyear.tm_hour = 0; newyear.tm_min = 0; newyear.tm_sec = 0;
+				newyear.tm_mon = 0;  newyear.tm_mday = 1;
+
+				startSeconds = difftime(now, mktime(&newyear));
 			}
 			//accroding to the direction i have set the lift earlier, the lift will move in that direction								
 		}										//and surpass the other method --> this happens in the methods
