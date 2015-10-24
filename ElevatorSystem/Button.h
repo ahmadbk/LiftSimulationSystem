@@ -73,7 +73,7 @@ public:
 
 	void illuminate(ALLEGRO_FONT *font4)
 	{
-		al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(127, 127, 0));
+		al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(75, 75, 0));
 		if (buttonType == 2)
 		{
 			if (FbuttonDirection)

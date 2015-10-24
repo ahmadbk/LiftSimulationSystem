@@ -184,7 +184,7 @@ int main(int argc, char **argv)
 				int a = i + 1;
 				char c = (char)a;
 				const char *c1 = &c;
-				al_draw_textf(font1, al_map_rgb(0, 0, 255), 80, sY, ALLEGRO_ALIGN_LEFT, "%d",i+1);
+				al_draw_textf(font1, al_map_rgb(255, 255, 255), 80, sY, ALLEGRO_ALIGN_LEFT, "%d",i+1);
 				sY += 50;
 				eY += 50;
 			}
@@ -198,7 +198,7 @@ int main(int argc, char **argv)
 			for (int i = 0; i < 5; i++)
 			{
 				b2[i] = new Button(150, sY, 180, eY, height, ButtonType, (i + 6));
-				al_draw_textf(font1, al_map_rgb(0, 0, 255), 156, sY, ALLEGRO_ALIGN_LEFT, "%d",i+6);
+				al_draw_textf(font1, al_map_rgb(255, 255, 255), 156, sY, ALLEGRO_ALIGN_LEFT, "%d",i+6);
 				sY += 50;
 				eY += 50;
 			}
