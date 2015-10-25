@@ -7,6 +7,9 @@
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 
+//Ahmad Bin Khalid
+//Sesethu Mhlana
+
 class Button
 {
 private:
@@ -68,15 +71,37 @@ public:
 			return FbuttonDirection;
 	}
 
-	void illuminate()
+	void illuminate(ALLEGRO_FONT *font4)
 	{
-		al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(127, 127, 0));
+		al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(75, 75, 0));
+		if (buttonType == 2)
+		{
+			if (FbuttonDirection)
+				al_draw_text(font4, al_map_rgb(255, 255, 255), startX + 6, startY, ALLEGRO_ALIGN_LEFT, "U");
+			else
+				al_draw_text(font4, al_map_rgb(255, 255, 255), startX + 6, startY, ALLEGRO_ALIGN_LEFT, "D");
+		}
+		else
+		{
+			al_draw_textf(font4, al_map_rgb(255, 255, 255), startX + 6, startY, ALLEGRO_ALIGN_LEFT, "%d", EbuttonNumber);
+		}
+
 	}
 
-	void CancelIlluminate()
+	void CancelIlluminate(ALLEGRO_FONT *font4)
 	{
-		al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 255));
-		al_draw_rectangle(startX, startY, endX, endY, al_map_rgb(255, 0, 0),height);
+		al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 0));
+		if (buttonType == 2)
+		{
+			if (FbuttonDirection)
+				al_draw_text(font4, al_map_rgb(255, 255, 255), startX + 6, startY, ALLEGRO_ALIGN_LEFT, "U");
+			else
+				al_draw_text(font4, al_map_rgb(255, 255, 255), startX + 6, startY, ALLEGRO_ALIGN_LEFT, "D");
+		}
+		else
+		{
+			al_draw_textf(font4, al_map_rgb(255, 255, 255), startX + 6, startY, ALLEGRO_ALIGN_LEFT, "%d", EbuttonNumber);
+		}
 	}
 };
 

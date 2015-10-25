@@ -168,72 +168,79 @@ int main(int argc, char **argv)
 		if (!makeObjects)
 		{
 			lift = new Elevator(400, 620, 450, 670);
+
+			//-----------------------------------------------------------------
+
+			//1st column of blocks outside the elevator
+			int sY = 70;
+			int eY = 100;
+			int height = 2;
+			ButtonType = 1;		//Elevator Button
+
+
+			for (int i = 0; i < 5; i++)
+			{
+				b1[i] = new Button(70, sY, 100, eY, height, ButtonType, (i + 1));
+				int a = i + 1;
+				char c = (char)a;
+				const char *c1 = &c;
+				al_draw_textf(font1, al_map_rgb(255, 255, 255), 76, sY, ALLEGRO_ALIGN_LEFT, "%d", i + 1);
+				sY += 50;
+				eY += 50;
+			}
+
+			//------------------------------------------------------------------
+
+			//2nd Column of blocks outside lift
+			sY = 70;
+			eY = 100;
+
+			for (int i = 0; i < 5; i++)
+			{
+				b2[i] = new Button(150, sY, 180, eY, height, ButtonType, (i + 6));
+				al_draw_textf(font1, al_map_rgb(255, 255, 255), 156, sY, ALLEGRO_ALIGN_LEFT, "%d", i + 6);
+				sY += 50;
+				eY += 50;
+			}
+
+			//------------------------------------------------------------------
+
+			//Draw Lines in between floors
+			sY = 70;
+			eY = 70;
+			for (int i = 0; i < 11; i++)
+			{
+				al_draw_line(550, sY, 640, eY, al_map_rgb(255, 0, 40), 2);
+				sY += 60;
+				eY += 60;
+			}
+
+			//------------------------------------------------------------------
+
+			//Floor Buttons
+			sY = 100;
+			eY = 120;
+			ButtonType = 2;		//Floor Button
+
+			for (int i = 0; i < 10; i++)					//Button(startX,startY,endX,endY,height,floor/elevator,floor number/direction)
+			{
+				if (i != 0)
+				{
+					b3[i] = new Button(570, sY, 590, eY, height, ButtonType, (10 - i), true);			//creates the first column of the floor button excluding last floor
+					al_draw_text(font4, al_map_rgb(255, 255, 255), 576, sY, ALLEGRO_ALIGN_LEFT, "U");
+				}
+				if (i != 9)
+				{
+					b4[i] = new Button(610, sY, 630, eY, height, ButtonType, (10 - i), false);			//creates the second column of the floor buttons excluding first floor
+					al_draw_text(font4, al_map_rgb(255, 255, 255), 616, sY, ALLEGRO_ALIGN_LEFT, "D");
+				}
+				sY += 60;
+				eY += 60;
+			}
+
 			makeObjects = true;
-		}
 
-		//-----------------------------------------------------------------
-
-		//1st column of blocks outside the elevator
-		int sY = 70;
-		int eY = 100;
-		int height = 2;
-		ButtonType = 1;		//Elevator Button
-		for (int i = 0; i < 5; i++)
-		{
-			b1[i] = new Button(70, sY, 100, eY, height, ButtonType, (i + 1));
-			int a = i + 1;
-			char *c = (char*)a;
-			al_draw_text(font1, al_map_rgb(0, 0, 255), 80, sY, ALLEGRO_ALIGN_LEFT, "1");
-			sY += 50;
-			eY += 50;
-		}
-
-		//------------------------------------------------------------------
-
-		//2nd Column of blocks outside lift
-		sY = 70;
-		eY = 100;
-		for (int i = 0; i < 5; i++)
-		{
-			b2[i] = new Button(150, sY, 180, eY, height, ButtonType, (i + 1 + 5));
-			al_draw_text(font1, al_map_rgb(0, 0, 255), 160, sY, ALLEGRO_ALIGN_LEFT, "2");
-			sY += 50;
-			eY += 50;
-		}
-
-		//------------------------------------------------------------------
-
-		//Draw Lines in between floors
-		sY = 70;
-		eY = 70;
-		for (int i = 0; i < 11; i++)
-		{
-			al_draw_line(550, sY, 640, eY, al_map_rgb(255, 0, 40), 2);
-			sY += 60;
-			eY += 60;
-		}
-
-		//------------------------------------------------------------------
-
-		//Floor Buttons
-		sY = 100;
-		eY = 120;
-		ButtonType = 2;		//Floor Button
-		for (int i = 0; i < 10; i++)					//Button(startX,startY,endX,endY,height,floor/elevator,floor number/direction)
-		{
-			if (i != 0)
-			{
-				b3[i] = new Button(570, sY, 590, eY, height, ButtonType, (10 - i), true);			//creates the first column of the floor button excluding last floor
-				al_draw_text(font4, al_map_rgb(0, 0, 255), 576, sY, ALLEGRO_ALIGN_LEFT, "\c");
-			}
-			if (i != 9)
-			{
-				b4[i] = new Button(610, sY, 630, eY, height, ButtonType, (10 - i), false);			//creates the second column of the floor buttons excluding first floor
-				al_draw_text(font3, al_map_rgb(0, 0, 255), 616, sY, ALLEGRO_ALIGN_LEFT, "D");
-			}
-			sY += 60;
-			eY += 60;
-		}
+		}//end of if statement to ensure objects are created only once
 
 		//------------------------------------------------------------------
 
@@ -256,13 +263,18 @@ int main(int argc, char **argv)
 				boolean ff1 = false;					//1st flag to check 1st column
 				boolean ff2 = false;					//second flag to check 2nd column
 				boolean notPressed = true;
-				ff1 = b1[i]->CheckButtonPressed(ec);	//the function tells us if the button was pressed
-				ff2 = b2[i]->CheckButtonPressed(ec);
+				if (ec.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
+					if (ec.mouse.x >= 70 && ec.mouse.x <= 100)
+						ff1 = b1[i]->CheckButtonPressed(ec);	//the function tells us if the button was pressed
+					if (ec.mouse.x >= 150 && ec.mouse.x <= 180)
+						ff2 = b2[i]->CheckButtonPressed(ec);
+				}
+
 
 				if (ff1)
 				{
-					printf("%d\n", b1[i]->getBNum());	//print the button that was pressed	
-					b1[i]->illuminate();				//illuminate the corresponding button
+					//printf("%d\n", b1[i]->getBNum());	//print the button that was pressed	
+					b1[i]->illuminate(font1);				//illuminate the corresponding button
 
 					if (serviceList.size() > 0)
 					{
@@ -279,8 +291,8 @@ int main(int argc, char **argv)
 				}
 				if (ff2)
 				{
-					printf("%d\n", b2[i]->getBNum());
-					b2[i]->illuminate();
+					//printf("%d\n", b2[i]->getBNum());
+					b2[i]->illuminate(font1);
 
 					if (serviceList.size() > 0)
 					{
@@ -302,15 +314,25 @@ int main(int argc, char **argv)
 				boolean ff1 = false;
 				boolean ff2 = false;
 				bool notPressed = true;
-				if (i != 0)															//1st column has no button on the the last floor 
-					ff1 = b3[i]->CheckButtonPressed(ec);							//check if button pressed in the 1st column
-				if (i != 9)
-					ff2 = b4[i]->CheckButtonPressed(ec);							//second column doesnt have button the first floor
+
+				if (ec.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
+				{
+					if (i != 0)															//1st column has no button on the the last floor 
+					{
+						if (ec.mouse.x >= 570 && ec.mouse.x <= 590)
+							ff1 = b3[i]->CheckButtonPressed(ec);							//check if button pressed in the 1st column
+					}
+					if (i != 9)
+					{
+						if (ec.mouse.x >= 610 && ec.mouse.x <= 630)
+							ff2 = b4[i]->CheckButtonPressed(ec);							//second column doesnt have button the first floor
+					}
+				}
 
 				if (ff1)
 				{
-					printf("(%d,%d)\n", b3[i]->getBNum(), b3[i]->getDirection());	//print what floor button was pressed and the corresponding direction
-					b3[i]->illuminate();											//illuminate the button
+					//printf("(%d,%d)\n", b3[i]->getBNum(), b3[i]->getDirection());	//print what floor button was pressed and the corresponding direction
+					b3[i]->illuminate(font4);											//illuminate the button
 
 					if (downRequestList.size() > 0)
 					{
@@ -327,8 +349,8 @@ int main(int argc, char **argv)
 				}
 				if (ff2)
 				{
-					printf("(%d,%d)\n", b4[i]->getBNum(), b4[i]->getDirection());
-					b4[i]->illuminate();
+					//printf("(%d,%d)\n", b4[i]->getBNum(), b4[i]->getDirection());
+					b4[i]->illuminate(font4);
 					if (downRequestList.size() > 0)
 					{
 						for (int a = 0; a < upRequestList.size(); a++)
@@ -341,6 +363,33 @@ int main(int argc, char **argv)
 						downRequestList.push_back(b4[i]->getBNum());							// add it in the request list
 					std::sort(downRequestList.begin(), downRequestList.end(), std::greater<int>());	// Sort in descending order
 				}
+			}
+
+			system("cls");
+
+			printf("Up Request List\n");
+			printf("----------------------\n");
+			if (upRequestList.size()>0)
+			{
+				for (int a = 0; a < upRequestList.size(); a++)
+					printf("%d\n", upRequestList[a]);
+			}
+
+			printf("Down Request List\n");
+			printf("----------------------\n");
+			if (downRequestList.size()>0)
+			{
+				for (int a = 0; a < downRequestList.size(); a++)
+					printf("%d\n", downRequestList[a]);
+			}
+
+			printf("Service Request List\n");
+			printf("----------------------\n");
+
+			if (serviceList.size()>0)
+			{
+				for (int a = 0; a < serviceList.size(); a++)
+					printf("%d\n", serviceList[a]);
 			}
 
 		}
@@ -362,7 +411,7 @@ int main(int argc, char **argv)
 			{
 				lift->allocateDirection(upRequestList, downRequestList, serviceList, destination);											// Allocate the direction 
 			}
-			
+
 			if (lift->getDirection() == 1)
 			{
 				if (serviceList.size() > 0 && lift->nextUpAddress(serviceList, destination, 1) >= lift->floorPosition())
@@ -443,7 +492,8 @@ int main(int argc, char **argv)
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
 
-		printf("%d\n", lift->floorPosition());	//Print the current position of the floor
+		//printf("%d\n", lift->floorPosition());	//Print the current position of the floor
+
 
 		if (ev.type == ALLEGRO_EVENT_TIMER)
 		{
@@ -455,9 +505,8 @@ int main(int argc, char **argv)
 				newyear.tm_mon = 0;  newyear.tm_mday = 1;
 
 				currentSeconds = difftime(now, mktime(&newyear));					// These are the seconds that have passed since new year
-				if (currentSeconds >= startSeconds + 3)								// The currentSeconds are the seconds from new year sampled when the elevator reaches its destination
+				if (currentSeconds >= startSeconds + 5)								// The currentSeconds are the seconds from new year sampled when the elevator reaches its destination
 				{																	// To set the delay to 10s, add 10 to startSeconds
-
 					// This part only happens after 10 seconds since the destination was reached, this creates the 10s delay
 					lift->setStatus(true);			//set the lift in motion
 					lift->moveUp();					//move up 
@@ -468,6 +517,30 @@ int main(int argc, char **argv)
 			{	// If the destination has been reached
 				if (upRequestList.size() > 0 || downRequestList.size() > 0 || serviceList.size() > 0)		// If there is an up request or down request or a service request
 				{
+
+					for (int i = 0; i < 10; i++)
+					{
+						if (i < 5)
+						{
+							if (b1[i]->getBNum() == lift->floorPosition())
+								b1[i]->CancelIlluminate(font1);
+
+							if (b2[i]->getBNum() == lift->floorPosition())
+								b2[i]->CancelIlluminate(font1);
+						}
+						if (i != 0)
+						{
+							if (b3[i]->getBNum() == lift->floorPosition())
+								b3[i]->CancelIlluminate(font4);
+						}
+						if (i != 9)
+						{
+							if (b4[i]->getBNum() == lift->floorPosition())
+								b4[i]->CancelIlluminate(font4);
+						}
+					}
+
+
 					// Determine which request was being served and remomove the one that has been executed
 					if (currentRequest == 0)
 					{
@@ -476,31 +549,35 @@ int main(int argc, char **argv)
 					}
 					else if (currentRequest == 1)
 					{
-						upRequestList.erase(upRequestList.begin());			
+						upRequestList.erase(upRequestList.begin());
 						currentRequest = -1;
 					}
 					else if (currentRequest == 2)
 					{
 						int a = 0; // a will be the iterator
-						while (a < serviceList.size())						
+						while (a < serviceList.size())
 						{
 							if (destination == serviceList[a])				// Find the service request in the service list that was executed
 							{
-								serviceList.erase(serviceList.begin()+a);	// Remove the request from the list
+								serviceList.erase(serviceList.begin() + a);	// Remove the request from the list
 								a = serviceList.size();						// Force the loop to terminate 
 								currentRequest = -1;						// and set the current request to unalocated
 							}
 						}
 					}
+
+					lift->openDoor();
 				}
 				lift->setStatus(false);
 
-				time(&now);  
+				time(&now);
 				localtime_s(&newyear, &now);
 				newyear.tm_hour = 0; newyear.tm_min = 0; newyear.tm_sec = 0;
 				newyear.tm_mon = 0;  newyear.tm_mday = 1;
 
 				startSeconds = difftime(now, mktime(&newyear));				// Get the seconds when the the destination was reached
+
+
 			}
 			//accroding to the direction i have set the lift earlier, the lift will move in that direction								
 		}										//and surpass the other method --> this happens in the methods
