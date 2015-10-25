@@ -169,74 +169,74 @@ int main(int argc, char **argv)
 		{
 			lift = new Elevator(400, 620, 450, 670);
 
-		//-----------------------------------------------------------------
+			//-----------------------------------------------------------------
 
-		//1st column of blocks outside the elevator
-		int sY = 70;
-		int eY = 100;
-		int height = 2;
-		ButtonType = 1;		//Elevator Button
+			//1st column of blocks outside the elevator
+			int sY = 70;
+			int eY = 100;
+			int height = 2;
+			ButtonType = 1;		//Elevator Button
 
 
-		for (int i = 0; i < 5; i++)
-		{
-			b1[i] = new Button(70, sY, 100, eY, height, ButtonType, (i + 1));
-			int a = i + 1;
+			for (int i = 0; i < 5; i++)
+			{
+				b1[i] = new Button(70, sY, 100, eY, height, ButtonType, (i + 1));
+				int a = i + 1;
 				char c = (char)a;
 				const char *c1 = &c;
 				al_draw_textf(font1, al_map_rgb(255, 255, 255), 76, sY, ALLEGRO_ALIGN_LEFT, "%d", i + 1);
-			sY += 50;
-			eY += 50;
-		}
+				sY += 50;
+				eY += 50;
+			}
 
-		//------------------------------------------------------------------
+			//------------------------------------------------------------------
 
-		//2nd Column of blocks outside lift
-		sY = 70;
-		eY = 100;
+			//2nd Column of blocks outside lift
+			sY = 70;
+			eY = 100;
 
-		for (int i = 0; i < 5; i++)
-		{
+			for (int i = 0; i < 5; i++)
+			{
 				b2[i] = new Button(150, sY, 180, eY, height, ButtonType, (i + 6));
 				al_draw_textf(font1, al_map_rgb(255, 255, 255), 156, sY, ALLEGRO_ALIGN_LEFT, "%d", i + 6);
-			sY += 50;
-			eY += 50;
-		}
+				sY += 50;
+				eY += 50;
+			}
 
-		//------------------------------------------------------------------
+			//------------------------------------------------------------------
 
-		//Draw Lines in between floors
-		sY = 70;
-		eY = 70;
-		for (int i = 0; i < 11; i++)
-		{
-			al_draw_line(550, sY, 640, eY, al_map_rgb(255, 0, 40), 2);
-			sY += 60;
-			eY += 60;
-		}
-
-		//------------------------------------------------------------------
-
-		//Floor Buttons
-		sY = 100;
-		eY = 120;
-		ButtonType = 2;		//Floor Button
-
-		for (int i = 0; i < 10; i++)					//Button(startX,startY,endX,endY,height,floor/elevator,floor number/direction)
-		{
-			if (i != 0)
+			//Draw Lines in between floors
+			sY = 70;
+			eY = 70;
+			for (int i = 0; i < 11; i++)
 			{
-				b3[i] = new Button(570, sY, 590, eY, height, ButtonType, (10 - i), true);			//creates the first column of the floor button excluding last floor
+				al_draw_line(550, sY, 640, eY, al_map_rgb(255, 0, 40), 2);
+				sY += 60;
+				eY += 60;
+			}
+
+			//------------------------------------------------------------------
+
+			//Floor Buttons
+			sY = 100;
+			eY = 120;
+			ButtonType = 2;		//Floor Button
+
+			for (int i = 0; i < 10; i++)					//Button(startX,startY,endX,endY,height,floor/elevator,floor number/direction)
+			{
+				if (i != 0)
+				{
+					b3[i] = new Button(570, sY, 590, eY, height, ButtonType, (10 - i), true);			//creates the first column of the floor button excluding last floor
 					al_draw_text(font4, al_map_rgb(255, 255, 255), 576, sY, ALLEGRO_ALIGN_LEFT, "U");
-			}
-			if (i != 9)
-			{
-				b4[i] = new Button(610, sY, 630, eY, height, ButtonType, (10 - i), false);			//creates the second column of the floor buttons excluding first floor
+				}
+				if (i != 9)
+				{
+					b4[i] = new Button(610, sY, 630, eY, height, ButtonType, (10 - i), false);			//creates the second column of the floor buttons excluding first floor
 					al_draw_text(font4, al_map_rgb(255, 255, 255), 616, sY, ALLEGRO_ALIGN_LEFT, "D");
+				}
+				sY += 60;
+				eY += 60;
 			}
-			sY += 60;
-			eY += 60;
-		}
 
 			makeObjects = true;
 
@@ -265,9 +265,9 @@ int main(int argc, char **argv)
 				boolean notPressed = true;
 				if (ec.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
 					if (ec.mouse.x >= 70 && ec.mouse.x <= 100)
-				ff1 = b1[i]->CheckButtonPressed(ec);	//the function tells us if the button was pressed
+						ff1 = b1[i]->CheckButtonPressed(ec);	//the function tells us if the button was pressed
 					if (ec.mouse.x >= 150 && ec.mouse.x <= 180)
-				ff2 = b2[i]->CheckButtonPressed(ec);
+						ff2 = b2[i]->CheckButtonPressed(ec);
 				}
 
 
@@ -317,15 +317,15 @@ int main(int argc, char **argv)
 
 				if (ec.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
 				{
-				if (i != 0)															//1st column has no button on the the last floor 
+					if (i != 0)															//1st column has no button on the the last floor 
 					{
 						if (ec.mouse.x >= 570 && ec.mouse.x <= 590)
-					ff1 = b3[i]->CheckButtonPressed(ec);							//check if button pressed in the 1st column
+							ff1 = b3[i]->CheckButtonPressed(ec);							//check if button pressed in the 1st column
 					}
-				if (i != 9)
+					if (i != 9)
 					{
 						if (ec.mouse.x >= 610 && ec.mouse.x <= 630)
-					ff2 = b4[i]->CheckButtonPressed(ec);							//second column doesnt have button the first floor
+							ff2 = b4[i]->CheckButtonPressed(ec);							//second column doesnt have button the first floor
 					}
 				}
 
@@ -373,7 +373,7 @@ int main(int argc, char **argv)
 			{
 				for (int a = 0; a < upRequestList.size(); a++)
 					printf("%d\n", upRequestList[a]);
-		}
+			}
 
 			printf("Down Request List\n");
 			printf("----------------------\n");
@@ -411,7 +411,7 @@ int main(int argc, char **argv)
 			{
 				lift->allocateDirection(upRequestList, downRequestList, serviceList, destination);											// Allocate the direction 
 			}
-			
+
 			if (lift->getDirection() == 1)
 			{
 				if (serviceList.size() > 0 && lift->nextUpAddress(serviceList, destination, 1) >= lift->floorPosition())
@@ -549,13 +549,13 @@ int main(int argc, char **argv)
 					}
 					else if (currentRequest == 1)
 					{
-						upRequestList.erase(upRequestList.begin());			
+						upRequestList.erase(upRequestList.begin());
 						currentRequest = -1;
 					}
 					else if (currentRequest == 2)
 					{
 						int a = 0; // a will be the iterator
-						while (a < serviceList.size())						
+						while (a < serviceList.size())
 						{
 							if (destination == serviceList[a])				// Find the service request in the service list that was executed
 							{
@@ -570,7 +570,7 @@ int main(int argc, char **argv)
 				}
 				lift->setStatus(false);
 
-				time(&now);  
+				time(&now);
 				localtime_s(&newyear, &now);
 				newyear.tm_hour = 0; newyear.tm_min = 0; newyear.tm_sec = 0;
 				newyear.tm_mon = 0;  newyear.tm_mday = 1;

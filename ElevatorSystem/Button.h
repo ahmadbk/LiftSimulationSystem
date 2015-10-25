@@ -99,7 +99,7 @@ public:
 				al_draw_text(font4, al_map_rgb(255, 255, 255), startX + 6, startY, ALLEGRO_ALIGN_LEFT, "D");
 		}
 		else
-	{
+		{
 			al_draw_textf(font4, al_map_rgb(255, 255, 255), startX + 6, startY, ALLEGRO_ALIGN_LEFT, "%d", EbuttonNumber);
 		}
 	}
