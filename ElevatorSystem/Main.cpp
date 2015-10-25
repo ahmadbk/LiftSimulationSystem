@@ -178,16 +178,16 @@ int main(int argc, char **argv)
 		ButtonType = 1;		//Elevator Button
 
 
-			for (int i = 0; i < 5; i++)
-			{
-				b1[i] = new Button(70, sY, 100, eY, height, ButtonType, (i + 1));
-				int a = i + 1;
+		for (int i = 0; i < 5; i++)
+		{
+			b1[i] = new Button(70, sY, 100, eY, height, ButtonType, (i + 1));
+			int a = i + 1;
 				char c = (char)a;
 				const char *c1 = &c;
-				al_draw_textf(font1, al_map_rgb(255, 255, 255), 76, sY, ALLEGRO_ALIGN_LEFT, "%d",i+1);
-				sY += 50;
-				eY += 50;
-			}
+				al_draw_textf(font1, al_map_rgb(255, 255, 255), 76, sY, ALLEGRO_ALIGN_LEFT, "%d", i + 1);
+			sY += 50;
+			eY += 50;
+		}
 
 		//------------------------------------------------------------------
 
@@ -195,13 +195,13 @@ int main(int argc, char **argv)
 		sY = 70;
 		eY = 100;
 
-			for (int i = 0; i < 5; i++)
-			{
+		for (int i = 0; i < 5; i++)
+		{
 				b2[i] = new Button(150, sY, 180, eY, height, ButtonType, (i + 6));
-				al_draw_textf(font1, al_map_rgb(255, 255, 255), 156, sY, ALLEGRO_ALIGN_LEFT, "%d",i+6);
-				sY += 50;
-				eY += 50;
-			}
+				al_draw_textf(font1, al_map_rgb(255, 255, 255), 156, sY, ALLEGRO_ALIGN_LEFT, "%d", i + 6);
+			sY += 50;
+			eY += 50;
+		}
 
 		//------------------------------------------------------------------
 
@@ -222,21 +222,21 @@ int main(int argc, char **argv)
 		eY = 120;
 		ButtonType = 2;		//Floor Button
 
-			for (int i = 0; i < 10; i++)					//Button(startX,startY,endX,endY,height,floor/elevator,floor number/direction)
+		for (int i = 0; i < 10; i++)					//Button(startX,startY,endX,endY,height,floor/elevator,floor number/direction)
+		{
+			if (i != 0)
 			{
-				if (i != 0)
-				{
-					b3[i] = new Button(570, sY, 590, eY, height, ButtonType, (10 - i), true);			//creates the first column of the floor button excluding last floor
+				b3[i] = new Button(570, sY, 590, eY, height, ButtonType, (10 - i), true);			//creates the first column of the floor button excluding last floor
 					al_draw_text(font4, al_map_rgb(255, 255, 255), 576, sY, ALLEGRO_ALIGN_LEFT, "U");
-				}
-				if (i != 9)
-				{
-					b4[i] = new Button(610, sY, 630, eY, height, ButtonType, (10 - i), false);			//creates the second column of the floor buttons excluding first floor
-					al_draw_text(font4, al_map_rgb(255, 255, 255), 616, sY, ALLEGRO_ALIGN_LEFT, "D");
-				}
-				sY += 60;
-				eY += 60;
 			}
+			if (i != 9)
+			{
+				b4[i] = new Button(610, sY, 630, eY, height, ButtonType, (10 - i), false);			//creates the second column of the floor buttons excluding first floor
+					al_draw_text(font4, al_map_rgb(255, 255, 255), 616, sY, ALLEGRO_ALIGN_LEFT, "D");
+			}
+			sY += 60;
+			eY += 60;
+		}
 
 			makeObjects = true;
 
@@ -265,9 +265,9 @@ int main(int argc, char **argv)
 				boolean notPressed = true;
 				if (ec.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
 					if (ec.mouse.x >= 70 && ec.mouse.x <= 100)
-						ff1 = b1[i]->CheckButtonPressed(ec);	//the function tells us if the button was pressed
+				ff1 = b1[i]->CheckButtonPressed(ec);	//the function tells us if the button was pressed
 					if (ec.mouse.x >= 150 && ec.mouse.x <= 180)
-						ff2 = b2[i]->CheckButtonPressed(ec);
+				ff2 = b2[i]->CheckButtonPressed(ec);
 				}
 
 
@@ -282,7 +282,7 @@ int main(int argc, char **argv)
 						{
 							if (serviceList[a] == b1[i]->getBNum())			// Check if button has already been pressed
 								notPressed = false;
-				}
+						}
 					}
 					if (notPressed = true)									// If this floor has not aleady been pressed
 						serviceList.push_back(b1[i]->getBNum());							// add it in the request list
@@ -300,8 +300,8 @@ int main(int argc, char **argv)
 						{
 							if (serviceList[a] == b2[i]->getBNum())		// Check if button has already been pressed
 								notPressed = false;
-				}
-			}
+						}
+					}
 					if (notPressed = true)									// If this floor has not aleady been pressed
 						serviceList.push_back(b2[i]->getBNum());							// add it in the request list
 					std::sort(serviceList.begin(), serviceList.end());	// Sort in ascending order
@@ -317,15 +317,15 @@ int main(int argc, char **argv)
 
 				if (ec.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
 				{
-					if (i != 0)															//1st column has no button on the the last floor 
+				if (i != 0)															//1st column has no button on the the last floor 
 					{
 						if (ec.mouse.x >= 570 && ec.mouse.x <= 590)
-							ff1 = b3[i]->CheckButtonPressed(ec);							//check if button pressed in the 1st column
+					ff1 = b3[i]->CheckButtonPressed(ec);							//check if button pressed in the 1st column
 					}
-					if (i != 9)
+				if (i != 9)
 					{
 						if (ec.mouse.x >= 610 && ec.mouse.x <= 630)
-							ff2 = b4[i]->CheckButtonPressed(ec);							//second column doesnt have button the first floor
+					ff2 = b4[i]->CheckButtonPressed(ec);							//second column doesnt have button the first floor
 					}
 				}
 
@@ -340,7 +340,7 @@ int main(int argc, char **argv)
 						{
 							if (upRequestList[a] == b3[i]->getBNum())		// Check if button has already been pressed
 								notPressed = false;
-				}
+						}
 					}
 					if (notPressed = true)									// If this floor has not aleady been pressed
 						upRequestList.push_back(b3[i]->getBNum());							// add it in the request list
@@ -357,8 +357,8 @@ int main(int argc, char **argv)
 						{
 							if (downRequestList[a] == b4[i]->getBNum())		// Check if button has already been pressed
 								notPressed = false;
-				}
-			}
+						}
+					}
 					if (notPressed = true)									// If this floor has not aleady been pressed
 						downRequestList.push_back(b4[i]->getBNum());							// add it in the request list
 					std::sort(downRequestList.begin(), downRequestList.end(), std::greater<int>());	// Sort in descending order
@@ -410,7 +410,7 @@ int main(int argc, char **argv)
 			if (lift->getDirection() < 0 || lift->getDirection() > 1)															// If direction is not allocated
 			{
 				lift->allocateDirection(upRequestList, downRequestList, serviceList, destination);											// Allocate the direction 
-		}
+			}
 			
 			if (lift->getDirection() == 1)
 			{
@@ -418,69 +418,69 @@ int main(int argc, char **argv)
 				{
 					destination = lift->nextUpAddress(serviceList, destination, 1);
 					currentRequest = 2;
-		}
+				}
 
 				if (upRequestList.size() > 0 && lift->nextUpAddress(upRequestList, destination, 1) >= lift->floorPosition())
-		{
-					if (serviceList.size() > 0 && lift->nextUpAddress(serviceList, destination, 1) >= lift->floorPosition())
-			{
-						if (lift->nextUpAddress(upRequestList, destination, 1) < lift->nextUpAddress(serviceList, destination, 1))
 				{
+					if (serviceList.size() > 0 && lift->nextUpAddress(serviceList, destination, 1) >= lift->floorPosition())
+					{
+						if (lift->nextUpAddress(upRequestList, destination, 1) < lift->nextUpAddress(serviceList, destination, 1))
+						{
 							destination = lift->nextUpAddress(upRequestList, destination, 1);
 							currentRequest = 1;
-				}
+						}
 					}
 					else
-				{
+					{
 						destination = lift->nextUpAddress(upRequestList, destination, 1);
 						currentRequest = 1;
-				}
+					}
 				}
 				else if (downRequestList.size() > 0 && lift->nextUpAddress(downRequestList, destination, 0) >= lift->floorPosition())
 				{
 					destination = lift->nextUpAddress(downRequestList, destination, 0);
 					currentRequest = 0;
 				}
-				}
+			}
 			else if (lift->getDirection() == 0)
 			{
 				if (serviceList.size() > 0 && lift->nextDownAddress(serviceList, destination, 1) <= lift->floorPosition())
 				{
 					destination = lift->nextDownAddress(serviceList, destination, 1);
 					currentRequest = 2;
-			}	
+				}
 
 				if (downRequestList.size() > 0 && lift->nextDownAddress(downRequestList, destination, 0) <= lift->floorPosition())
-			{
+				{
 					if (serviceList.size() > 0 && lift->nextDownAddress(serviceList, destination, 1) <= lift->floorPosition())
 					{
 						if (lift->nextDownAddress(downRequestList, destination, 0) > lift->nextUpAddress(serviceList, destination, 1))
 						{
 							destination = lift->nextDownAddress(downRequestList, destination, 0);
 							currentRequest = 0;
+						}
 					}
-				}
 					else
 					{
 						destination = lift->nextDownAddress(downRequestList, destination, 0);
 						currentRequest = 0;
+					}
 				}
-			}
 				else if (upRequestList.size() > 0 && lift->nextDownAddress(upRequestList, destination, 1) <= lift->floorPosition())
-						{
+				{
 					destination = lift->nextDownAddress(upRequestList, destination, 1);
 					currentRequest = 1;
-						}												
-					}
+				}
+			}
 
 			lift->allocateDirection(upRequestList, downRequestList, serviceList, destination);
-				}
+		}
 		else
 		{	// If there is no request, go to ground floor and deallocate the direction.
 			destination = 1;
 			lift->setDirection(0);
 			if (destination == 1 && lift->getStatus() == false)
-				{
+			{
 				lift->setDirection(-1);
 				currentRequest = -1;
 			}
@@ -524,7 +524,7 @@ int main(int argc, char **argv)
 						{
 							if (b1[i]->getBNum() == lift->floorPosition())
 								b1[i]->CancelIlluminate(font1);
-							
+
 							if (b2[i]->getBNum() == lift->floorPosition())
 								b2[i]->CancelIlluminate(font1);
 						}
@@ -559,13 +559,13 @@ int main(int argc, char **argv)
 						{
 							if (destination == serviceList[a])				// Find the service request in the service list that was executed
 							{
-								serviceList.erase(serviceList.begin()+a);	// Remove the request from the list
+								serviceList.erase(serviceList.begin() + a);	// Remove the request from the list
 								a = serviceList.size();						// Force the loop to terminate 
 								currentRequest = -1;						// and set the current request to unalocated
 							}
 						}
 					}
-				
+
 					lift->openDoor();
 				}
 				lift->setStatus(false);
