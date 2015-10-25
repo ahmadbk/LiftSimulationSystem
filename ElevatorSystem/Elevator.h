@@ -93,6 +93,89 @@ public:
 		return floor;
 	}
 
+	void allocateDirection(std::vector<int> & upReq, std::vector<int> downReq, std::vector<int> servReq, int currDest)
+	{
+		int dir;
+		if (upReq.size() > 0 && nextUpAddress(upReq, currDest, 1) > floor)
+		{
+			direction = 1;
+		}
+		else if (downReq.size() > 0 && nextUpAddress(downReq, currDest, 0) > floor)
+		{
+			direction = 1;
+		}
+		else if (servReq.size() > 0 && nextUpAddress(servReq, currDest, 1) > floor)
+		{
+			direction = 1;
+		}
+		else if (downReq.size() > 0 && nextDownAddress(downReq, currDest, 0) < floor)
+		{
+			direction = 0;
+		}
+		else if (upReq.size() > 0 && nextDownAddress(upReq, currDest, 1) < floor)
+		{
+			direction = 0;
+		}
+		else if (servReq.size() > 0 && nextDownAddress(downReq, currDest, 1) < floor)
+		{
+			direction = 0;
+		}
+		else
+		{
+			direction = -1;
+		}
+	}
+
+	int nextUpAddress(std::vector<int> & list, int currDest, int reqType)
+	{
+		int destFloor = currDest, it = 0;
+		if (reqType == 1)												// If its an up request
+		{
+			if (list.size() > 1)										// This is only done if there are requests in the list
+			{
+				while (it < list.size())								// && floor >= reqList[it])	// Start from the beginning of the vector and search for the closest request to the 
+				{
+					destFloor = list[it];								// elevator's current floor
+					if (destFloor <= floor)
+						it++;
+					else it = list.size();		// Force termination
+				}
+			}
+			else if (list.size() == 1)
+			{
+				destFloor = list[0];
+			}
+		}
+		else if (reqType == 0)
+			destFloor = list[0];
+
+		return destFloor;
+	}
+
+	int nextDownAddress(std::vector<int> & list, int currDest, int reqType)
+	{
+		int destFloor = currDest, it = 0;
+		if (reqType == 1 || list.size() == 1)												// If its an up request
+		{
+			destFloor = list[0];
+		}
+		else if (reqType == 0)
+		{
+			if (list.size() > 1)										// This is only done if there are requests in the list
+			{
+				while (it < list.size())								// && floor >= reqList[it])	// Start from the beginning of the vector and search for the closest request to the 
+				{
+					destFloor = list[it];								// elevator's current floor
+					if (destFloor >= floor)
+						it++;
+					else it = list.size();		// Force termination
+				}
+			}
+		}
+		return destFloor;
+	}
+
+
 	//// destination() accepts a vector as an argument and determines which floor to accept a request from. For now onl UP request are executed
 	//int destination(std::vector<int> & reqList, int reqType, Elevator& lift)
 	//{
