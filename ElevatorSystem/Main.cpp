@@ -379,105 +379,86 @@ int main(int argc, char **argv)
 		//-command the lift to move to desitination
 		//*******************************************************************************************************************************************************************************
 		//*****************************************************************This section is the intelligence of the lift******************************************************************
-		if (upRequestList.size() > 0 && upRequestList[0] > lift->floorPosition() && currentRequest != 0)					// If there is an up request, the first request in the list  
-		{																													// is above elevator floor, and current request is not a down request
-			destination = upRequestList[0];																					// The new destination will be the first request in the list
-			currentRequest = 1;																								// currentRequest is an up request
-			lift->setDirection(1);																							// direction is up
-		}
-		else if (downRequestList.size() > 0 && downRequestList[0] > lift->floorPosition() && currentRequest != 1)			// If there is a down request, the first request in the list 
-		{																													// is greater than the elevator floor, and current request is not an up request
-			destination = downRequestList[0];																				// The new destination will be the first request in the list
-			currentRequest = 0;																								// currentRequest is a down request
-			lift->setDirection(1);																							// direction is down
-		}
-		else if (downRequestList.size() > 0 && downRequestList[0] < lift->floorPosition() && currentRequest != 1)			// If there is a down request, the first request in the list 
-		{																													// is below elevator floor, and current request is not an up request
-			destination = downRequestList[0];																				// The new destination will be the first request in the list
-			currentRequest = 0;																								// currentRequest i a down request
-			lift->setDirection(0);																							// direction is down
-		}
-		else if (upRequestList.size() > 0 && upRequestList[0] < lift->floorPosition() && currentRequest != 0)				// If there is an up request, the first request in the list 
-		{																													// is below elevator floor, and current request is not a down request
-			destination = upRequestList[0];																					// The new destination will be the first request in the list
-			currentRequest = 1;																								// currentRequest is an up request
-			lift->setDirection(0);																							// direction is down
-		}
-		else if (upRequestList.size() == 0 && downRequestList.size() == 0 && serviceList.size() == 0)						// If there is no up request, no dwon request and no service requested (inside) 
-		{																													// The new destination is ground floor
-			destination = 1;																								// 
-			lift->setDirection(0);																							// Direction is down
-			if (lift->getStatus() == false) lift->setDirection(-1);	// If lift is not miving, set direction = unallocated i.e stay still on ground floor
-		}
-		//*******************************************************************************************************************************************************************************
-		if (serviceList.size() > 0)										// If there is a request from inside the lift
+		if (upRequestList.size() > 0 || downRequestList.size() > 0 || serviceList.size() > 0)									// If there is a request
 		{
-			if (lift->getDirection() < 0)								// If the direction is unallocated
+			if (lift->getDirection() < 0 || lift->getDirection() > 1)															// If direction is not allocated
 			{
-				destination = serviceList[0];							// The destination is the first request in the service list
-				if (destination > lift->floorPosition())				// If the destination is above the elevator floor
-				{
-					lift->setDirection(1);								// Direction is up
-					currentRequest = 2;									// and current request is a service request (inside lift)
-				}
-				else if (destination < lift->floorPosition())			// If the destination is below elevator position 
-				{
-					lift->setDirection(0);								// The direction is down
-					currentRequest = 2;									// and current request is a service request (inside lift)
-				}
-				else if (destination == lift->floorPosition())			// If the destination is on the same floor as the elevator, remove it from the list
-				{
-					serviceList.erase(serviceList.begin());				// Remove the service from the list
-				}
-			}	
-			else if (lift->getDirection() == 1)							// If lift is moving up
+				lift->allocateDirection(upRequestList, downRequestList, serviceList, destination);											// Allocate the direction 
+			}
+			
+			if (lift->getDirection() == 1)
 			{
-				int potentialDest, it = 0;								// The potentialDest is a destination that we might use as the destination given the following conditions
-				if (serviceList.size() > 1)								// This is only done if there are 2 or more requests in the list
-				{														// Start from the beginning of the vector and search for the closest request to the elevator floor
-					while (it < serviceList.size())						// it is an iterator that goes from beginning of the vector to the end  
+				if (serviceList.size() > 0 && lift->nextUpAddress(serviceList, destination, 1) >= lift->floorPosition())
+				{
+					destination = lift->nextUpAddress(serviceList, destination, 1);
+					currentRequest = 2;
+				}
+
+				if (upRequestList.size() > 0 && lift->nextUpAddress(upRequestList, destination, 1) >= lift->floorPosition())
+				{
+					if (serviceList.size() > 0 && lift->nextUpAddress(serviceList, destination, 1) >= lift->floorPosition())
 					{
-						potentialDest = serviceList[it];				// Sample each element in the list and test 
-						if (potentialDest < lift->floorPosition())		// If potentialDest is below elevator position
-							it++;										// move on to the next element 
-						else
+						if (lift->nextUpAddress(upRequestList, destination, 1) < lift->nextUpAddress(serviceList, destination, 1))
 						{
-							destination = potentialDest;				// If the potentialDest is not below lift floor use potentialDest as the destination
-							currentRequest = 2;							// currentRequest is a service request
-							it = serviceList.size();					// Force the loop to terminate because we have the required results
+							destination = lift->nextUpAddress(upRequestList, destination, 1);
+							currentRequest = 1;
 						}
 					}
-				}
-				else if (serviceList[0] > lift->floorPosition())		// If the first request in the list is above the elevator floor
-				{														// 
-					destination = serviceList[0];						// The destination is the first element in the list
-					currentRequest = 2;									// currentRequest in a service request
-				}
-			}
-			else if (lift->getDirection() == 0)							// If the lift direction is down
-			{
-				int potentialDest, it = 0;								// 
-				if (serviceList.size() > 1)								// This is only done if there are 2 or more requests in the list
-				{
-					while (it < serviceList.size())						// Start from the beginning of the vector and search for the closest request to the elevator floor 
-					{													// it is an iterator that goes from beginning of the vector to the end  
-						potentialDest = serviceList[it];
-						if (potentialDest > lift->floorPosition())		// Sample each element in the list and test 
-							it++;										// If potentialDest is above elevator position
-						else											// move on to the next element 
-						{
-							destination = potentialDest;				// If the potentialDest is not below lift floor use potentialDest as the destination
-							currentRequest = 2;							// currentRequest is a service requestmination
-							it = serviceList.size();					// Force the loop to terminate because we have the required results
-						}												
+					else
+					{
+						destination = lift->nextUpAddress(upRequestList, destination, 1);
+						currentRequest = 1;
 					}
 				}
-				else if (serviceList[0] < lift->floorPosition())		// If the first request in the list is below elevator floor
+				else if (downRequestList.size() > 0 && lift->nextUpAddress(downRequestList, destination, 0) >= lift->floorPosition())
 				{
-					destination = serviceList[0];						// The destination is that request
-					currentRequest = 2;									// Current request is a servive request
+					destination = lift->nextUpAddress(downRequestList, destination, 0);
+					currentRequest = 0;
 				}
 			}
+			else if (lift->getDirection() == 0)
+			{
+				if (serviceList.size() > 0 && lift->nextDownAddress(serviceList, destination, 1) <= lift->floorPosition())
+				{
+					destination = lift->nextDownAddress(serviceList, destination, 1);
+					currentRequest = 2;
+				}
+
+				if (downRequestList.size() > 0 && lift->nextDownAddress(downRequestList, destination, 0) <= lift->floorPosition())
+				{
+					if (serviceList.size() > 0 && lift->nextDownAddress(serviceList, destination, 1) <= lift->floorPosition())
+					{
+						if (lift->nextDownAddress(downRequestList, destination, 0) > lift->nextUpAddress(serviceList, destination, 1))
+						{
+							destination = lift->nextDownAddress(downRequestList, destination, 0);
+							currentRequest = 0;
+						}
+					}
+					else
+					{
+						destination = lift->nextDownAddress(downRequestList, destination, 0);
+						currentRequest = 0;
+					}
+				}
+				else if (upRequestList.size() > 0 && lift->nextDownAddress(upRequestList, destination, 1) <= lift->floorPosition())
+				{
+					destination = lift->nextDownAddress(upRequestList, destination, 1);
+					currentRequest = 1;
+				}
+			}
+
+			lift->allocateDirection(upRequestList, downRequestList, serviceList, destination);
+		}
+		else
+		{	// If there is no request, go to ground floor and deallocate the direction.
+			destination = 1;
+			lift->setDirection(0);
+			if (destination == 1 && lift->getStatus() == false)
+			{
+				lift->setDirection(-1);
+				currentRequest = -1;
+			}
+
 		}
 		//*******************************************************************************************************************************************************************************
 		//*******************************************************************************************************************************************************************************
