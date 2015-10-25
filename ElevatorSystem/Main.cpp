@@ -262,7 +262,6 @@ int main(int argc, char **argv)
 			{
 				boolean ff1 = false;					//1st flag to check 1st column
 				boolean ff2 = false;					//second flag to check 2nd column
-				boolean notPressed = true;
 				if (ec.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
 					if (ec.mouse.x >= 70 && ec.mouse.x <= 100)
 						ff1 = b1[i]->CheckButtonPressed(ec);	//the function tells us if the button was pressed
@@ -273,6 +272,7 @@ int main(int argc, char **argv)
 
 				if (ff1)
 				{
+					boolean notPressed = true;
 					//printf("%d\n", b1[i]->getBNum());	//print the button that was pressed	
 					b1[i]->illuminate(font1);				//illuminate the corresponding button
 
@@ -284,13 +284,14 @@ int main(int argc, char **argv)
 								notPressed = false;
 						}
 					}
-					if (notPressed = true)									// If this floor has not aleady been pressed
+					if (notPressed == true)									// If this floor has not aleady been pressed
 						serviceList.push_back(b1[i]->getBNum());							// add it in the request list
 					std::sort(serviceList.begin(), serviceList.end());	// Sort in ascending order
 
 				}
 				if (ff2)
 				{
+					boolean notPressed = true;
 					//printf("%d\n", b2[i]->getBNum());
 					b2[i]->illuminate(font1);
 
@@ -302,7 +303,7 @@ int main(int argc, char **argv)
 								notPressed = false;
 						}
 					}
-					if (notPressed = true)									// If this floor has not aleady been pressed
+					if (notPressed == true)									// If this floor has not aleady been pressed
 						serviceList.push_back(b2[i]->getBNum());							// add it in the request list
 					std::sort(serviceList.begin(), serviceList.end());	// Sort in ascending order
 				}
@@ -313,7 +314,6 @@ int main(int argc, char **argv)
 			{
 				boolean ff1 = false;
 				boolean ff2 = false;
-				bool notPressed = true;
 
 				if (ec.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
 				{
@@ -331,10 +331,11 @@ int main(int argc, char **argv)
 
 				if (ff1)
 				{
+					bool notPressed = true;
 					//printf("(%d,%d)\n", b3[i]->getBNum(), b3[i]->getDirection());	//print what floor button was pressed and the corresponding direction
 					b3[i]->illuminate(font4);											//illuminate the button
 
-					if (downRequestList.size() > 0)
+					if (upRequestList.size() > 0)
 					{
 						for (int a = 0; a < upRequestList.size(); a++)
 						{
@@ -342,13 +343,14 @@ int main(int argc, char **argv)
 								notPressed = false;
 						}
 					}
-					if (notPressed = true)									// If this floor has not aleady been pressed
+					if (notPressed == true)									// If this floor has not aleady been pressed
 						upRequestList.push_back(b3[i]->getBNum());							// add it in the request list
 					std::sort(upRequestList.begin(), upRequestList.end());	// Sort in ascending order
 
 				}
 				if (ff2)
 				{
+					bool notPressed = true;
 					//printf("(%d,%d)\n", b4[i]->getBNum(), b4[i]->getDirection());
 					b4[i]->illuminate(font4);
 					if (downRequestList.size() > 0)
@@ -359,7 +361,7 @@ int main(int argc, char **argv)
 								notPressed = false;
 						}
 					}
-					if (notPressed = true)									// If this floor has not aleady been pressed
+					if (notPressed == true)									// If this floor has not aleady been pressed
 						downRequestList.push_back(b4[i]->getBNum());							// add it in the request list
 					std::sort(downRequestList.begin(), downRequestList.end(), std::greater<int>());	// Sort in descending order
 				}
