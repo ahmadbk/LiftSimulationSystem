@@ -373,7 +373,7 @@ int main(int argc, char **argv)
 			{
 				for (int a = 0; a < upRequestList.size(); a++)
 					printf("%d\n", upRequestList[a]);
-			}
+		}
 
 			printf("Down Request List\n");
 			printf("----------------------\n");
@@ -410,7 +410,7 @@ int main(int argc, char **argv)
 			if (lift->getDirection() < 0 || lift->getDirection() > 1)															// If direction is not allocated
 			{
 				lift->allocateDirection(upRequestList, downRequestList, serviceList, destination);											// Allocate the direction 
-			}
+		}
 			
 			if (lift->getDirection() == 1)
 			{
@@ -418,69 +418,69 @@ int main(int argc, char **argv)
 				{
 					destination = lift->nextUpAddress(serviceList, destination, 1);
 					currentRequest = 2;
-				}
+		}
 
 				if (upRequestList.size() > 0 && lift->nextUpAddress(upRequestList, destination, 1) >= lift->floorPosition())
-				{
+		{
 					if (serviceList.size() > 0 && lift->nextUpAddress(serviceList, destination, 1) >= lift->floorPosition())
-					{
+			{
 						if (lift->nextUpAddress(upRequestList, destination, 1) < lift->nextUpAddress(serviceList, destination, 1))
-						{
+				{
 							destination = lift->nextUpAddress(upRequestList, destination, 1);
 							currentRequest = 1;
-						}
+				}
 					}
 					else
-					{
+				{
 						destination = lift->nextUpAddress(upRequestList, destination, 1);
 						currentRequest = 1;
-					}
+				}
 				}
 				else if (downRequestList.size() > 0 && lift->nextUpAddress(downRequestList, destination, 0) >= lift->floorPosition())
 				{
 					destination = lift->nextUpAddress(downRequestList, destination, 0);
 					currentRequest = 0;
 				}
-			}
+				}
 			else if (lift->getDirection() == 0)
 			{
 				if (serviceList.size() > 0 && lift->nextDownAddress(serviceList, destination, 1) <= lift->floorPosition())
 				{
 					destination = lift->nextDownAddress(serviceList, destination, 1);
 					currentRequest = 2;
-				}
+			}	
 
 				if (downRequestList.size() > 0 && lift->nextDownAddress(downRequestList, destination, 0) <= lift->floorPosition())
-				{
+			{
 					if (serviceList.size() > 0 && lift->nextDownAddress(serviceList, destination, 1) <= lift->floorPosition())
 					{
 						if (lift->nextDownAddress(downRequestList, destination, 0) > lift->nextUpAddress(serviceList, destination, 1))
 						{
 							destination = lift->nextDownAddress(downRequestList, destination, 0);
 							currentRequest = 0;
-						}
 					}
+				}
 					else
 					{
 						destination = lift->nextDownAddress(downRequestList, destination, 0);
 						currentRequest = 0;
-					}
-				}
-				else if (upRequestList.size() > 0 && lift->nextDownAddress(upRequestList, destination, 1) <= lift->floorPosition())
-				{
-					destination = lift->nextDownAddress(upRequestList, destination, 1);
-					currentRequest = 1;
 				}
 			}
+				else if (upRequestList.size() > 0 && lift->nextDownAddress(upRequestList, destination, 1) <= lift->floorPosition())
+						{
+					destination = lift->nextDownAddress(upRequestList, destination, 1);
+					currentRequest = 1;
+						}												
+					}
 
 			lift->allocateDirection(upRequestList, downRequestList, serviceList, destination);
-		}
+				}
 		else
 		{	// If there is no request, go to ground floor and deallocate the direction.
 			destination = 1;
 			lift->setDirection(0);
 			if (destination == 1 && lift->getStatus() == false)
-			{
+				{
 				lift->setDirection(-1);
 				currentRequest = -1;
 			}
