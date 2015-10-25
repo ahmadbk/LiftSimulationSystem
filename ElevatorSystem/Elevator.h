@@ -116,7 +116,7 @@ public:
 		{
 			direction = 0;
 		}
-		else if (servReq.size() > 0 && nextDownAddress(downReq, currDest, 1) < floor)
+		else if (servReq.size() > 0 && nextDownAddress(servReq, currDest, 1) < floor)
 		{
 			direction = 0;
 		}
@@ -136,7 +136,7 @@ public:
 				while (it < list.size())								// && floor >= reqList[it])	// Start from the beginning of the vector and search for the closest request to the 
 				{
 					destFloor = list[it];								// elevator's current floor
-					if (destFloor <= floor)
+					if (destFloor < floor)
 						it++;
 					else it = list.size();		// Force termination
 				}
@@ -166,7 +166,7 @@ public:
 				while (it < list.size())								// && floor >= reqList[it])	// Start from the beginning of the vector and search for the closest request to the 
 				{
 					destFloor = list[it];								// elevator's current floor
-					if (destFloor >= floor)
+					if (destFloor > floor)
 						it++;
 					else it = list.size();		// Force termination
 				}

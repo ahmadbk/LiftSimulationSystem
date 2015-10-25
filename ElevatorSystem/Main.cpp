@@ -387,7 +387,44 @@ int main(int argc, char **argv)
 						currentRequest = 1;
 					}
 				}
+				else if (downRequestList.size() > 0 && lift->nextUpAddress(downRequestList, destination, 0) >= lift->floorPosition())
+				{
+					destination = lift->nextUpAddress(downRequestList, destination, 0);
+					currentRequest = 0;
+				}
 			}
+			else if (lift->getDirection() == 0)
+			{
+				if (serviceList.size() > 0 && lift->nextDownAddress(serviceList, destination, 1) <= lift->floorPosition())
+				{
+					destination = lift->nextDownAddress(serviceList, destination, 1);
+					currentRequest = 2;
+				}
+
+				if (downRequestList.size() > 0 && lift->nextDownAddress(downRequestList, destination, 0) <= lift->floorPosition())
+				{
+					if (serviceList.size() > 0 && lift->nextDownAddress(serviceList, destination, 1) <= lift->floorPosition())
+					{
+						if (lift->nextDownAddress(downRequestList, destination, 0) > lift->nextUpAddress(serviceList, destination, 1))
+						{
+							destination = lift->nextDownAddress(downRequestList, destination, 0);
+							currentRequest = 0;
+						}
+					}
+					else
+					{
+						destination = lift->nextDownAddress(downRequestList, destination, 0);
+						currentRequest = 0;
+					}
+				}
+				else if (upRequestList.size() > 0 && lift->nextDownAddress(upRequestList, destination, 1) <= lift->floorPosition())
+				{
+					destination = lift->nextDownAddress(upRequestList, destination, 1);
+					currentRequest = 1;
+				}
+			}
+
+			lift->allocateDirection(upRequestList, downRequestList, serviceList, destination);
 		}
 		else
 		{	// If there is no request, go to ground floor and deallocate the direction.
@@ -435,12 +472,12 @@ int main(int argc, char **argv)
 					if (currentRequest == 0)
 					{
 						downRequestList.erase(downRequestList.begin());		// Remove the request from the list
-						//currentRequest = -1;								// and set the current request to unalocated
+						currentRequest = -1;								// and set the current request to unalocated
 					}
 					else if (currentRequest == 1)
 					{
 						upRequestList.erase(upRequestList.begin());			
-						//currentRequest = -1;
+						currentRequest = -1;
 					}
 					else if (currentRequest == 2)
 					{
@@ -451,7 +488,7 @@ int main(int argc, char **argv)
 							{
 								serviceList.erase(serviceList.begin()+a);	// Remove the request from the list
 								a = serviceList.size();						// Force the loop to terminate 
-								//currentRequest = -1;						// and set the current request to unalocated
+								currentRequest = -1;						// and set the current request to unalocated
 							}
 						}
 					}
