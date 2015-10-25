@@ -184,7 +184,7 @@ int main(int argc, char **argv)
 				int a = i + 1;
 				char c = (char)a;
 				const char *c1 = &c;
-				al_draw_textf(font1, al_map_rgb(255, 255, 255), 80, sY, ALLEGRO_ALIGN_LEFT, "%d",i+1);
+				al_draw_textf(font1, al_map_rgb(255, 255, 255), 76, sY, ALLEGRO_ALIGN_LEFT, "%d",i+1);
 				sY += 50;
 				eY += 50;
 			}
@@ -269,9 +269,11 @@ int main(int argc, char **argv)
 					if (ec.mouse.x >= 150 && ec.mouse.x <= 180)
 						ff2 = b2[i]->CheckButtonPressed(ec);
 				}
+
+
 				if (ff1)
 				{
-					printf("%d\n", b1[i]->getBNum());	//print the button that was pressed	
+					//printf("%d\n", b1[i]->getBNum());	//print the button that was pressed	
 					b1[i]->illuminate(font1);				//illuminate the corresponding button
 
 					if (serviceList.size() > 0)
@@ -289,7 +291,7 @@ int main(int argc, char **argv)
 				}
 				if (ff2)
 				{
-					printf("%d\n", b2[i]->getBNum());
+					//printf("%d\n", b2[i]->getBNum());
 					b2[i]->illuminate(font1);
 
 					if (serviceList.size() > 0)
@@ -329,7 +331,7 @@ int main(int argc, char **argv)
 
 				if (ff1)
 				{
-					printf("(%d,%d)\n", b3[i]->getBNum(), b3[i]->getDirection());	//print what floor button was pressed and the corresponding direction
+					//printf("(%d,%d)\n", b3[i]->getBNum(), b3[i]->getDirection());	//print what floor button was pressed and the corresponding direction
 					b3[i]->illuminate(font4);											//illuminate the button
 
 					if (downRequestList.size() > 0)
@@ -347,7 +349,7 @@ int main(int argc, char **argv)
 				}
 				if (ff2)
 				{
-					printf("(%d,%d)\n", b4[i]->getBNum(), b4[i]->getDirection());
+					//printf("(%d,%d)\n", b4[i]->getBNum(), b4[i]->getDirection());
 					b4[i]->illuminate(font4);
 					if (downRequestList.size() > 0)
 					{
@@ -361,6 +363,33 @@ int main(int argc, char **argv)
 						downRequestList.push_back(b4[i]->getBNum());							// add it in the request list
 					std::sort(downRequestList.begin(), downRequestList.end(), std::greater<int>());	// Sort in descending order
 				}
+			}
+
+			system("cls");
+
+			printf("Up Request List\n");
+			printf("----------------------\n");
+			if (upRequestList.size()>0)
+			{
+				for (int a = 0; a < upRequestList.size(); a++)
+					printf("%d\n", upRequestList[a]);
+			}
+
+			printf("Down Request List\n");
+			printf("----------------------\n");
+			if (downRequestList.size()>0)
+			{
+				for (int a = 0; a < downRequestList.size(); a++)
+					printf("%d\n", downRequestList[a]);
+			}
+
+			printf("Service Request List\n");
+			printf("----------------------\n");
+
+			if (serviceList.size()>0)
+			{
+				for (int a = 0; a < serviceList.size(); a++)
+					printf("%d\n", serviceList[a]);
 			}
 
 		}
@@ -463,7 +492,7 @@ int main(int argc, char **argv)
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
 
-		printf("%d\n", lift->floorPosition());	//Print the current position of the floor
+		//printf("%d\n", lift->floorPosition());	//Print the current position of the floor
 
 
 		if (ev.type == ALLEGRO_EVENT_TIMER)
@@ -476,9 +505,8 @@ int main(int argc, char **argv)
 				newyear.tm_mon = 0;  newyear.tm_mday = 1;
 
 				currentSeconds = difftime(now, mktime(&newyear));					// These are the seconds that have passed since new year
-				if (currentSeconds >= startSeconds + 3)								// The currentSeconds are the seconds from new year sampled when the elevator reaches its destination
+				if (currentSeconds >= startSeconds + 5)								// The currentSeconds are the seconds from new year sampled when the elevator reaches its destination
 				{																	// To set the delay to 10s, add 10 to startSeconds
-
 					// This part only happens after 10 seconds since the destination was reached, this creates the 10s delay
 					lift->setStatus(true);			//set the lift in motion
 					lift->moveUp();					//move up 
@@ -489,6 +517,30 @@ int main(int argc, char **argv)
 			{	// If the destination has been reached
 				if (upRequestList.size() > 0 || downRequestList.size() > 0 || serviceList.size() > 0)		// If there is an up request or down request or a service request
 				{
+
+					for (int i = 0; i < 10; i++)
+					{
+						if (i < 5)
+						{
+							if (b1[i]->getBNum() == lift->floorPosition())
+								b1[i]->CancelIlluminate(font1);
+							
+							if (b2[i]->getBNum() == lift->floorPosition())
+								b2[i]->CancelIlluminate(font1);
+						}
+						if (i != 0)
+						{
+							if (b3[i]->getBNum() == lift->floorPosition())
+								b3[i]->CancelIlluminate(font4);
+						}
+						if (i != 9)
+						{
+							if (b4[i]->getBNum() == lift->floorPosition())
+								b4[i]->CancelIlluminate(font4);
+						}
+					}
+
+
 					// Determine which request was being served and remomove the one that has been executed
 					if (currentRequest == 0)
 					{
@@ -513,6 +565,8 @@ int main(int argc, char **argv)
 							}
 						}
 					}
+				
+					lift->openDoor();
 				}
 				lift->setStatus(false);
 
@@ -522,6 +576,8 @@ int main(int argc, char **argv)
 				newyear.tm_mon = 0;  newyear.tm_mday = 1;
 
 				startSeconds = difftime(now, mktime(&newyear));				// Get the seconds when the the destination was reached
+
+
 			}
 			//accroding to the direction i have set the lift earlier, the lift will move in that direction								
 		}										//and surpass the other method --> this happens in the methods

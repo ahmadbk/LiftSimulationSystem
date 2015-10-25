@@ -77,7 +77,7 @@ public:
 		if (buttonType == 2)
 		{
 			if (FbuttonDirection)
-				al_draw_text(font4, al_map_rgb(255, 255, 255), startX+6, startY, ALLEGRO_ALIGN_LEFT, "U");
+				al_draw_text(font4, al_map_rgb(255, 255, 255), startX + 6, startY, ALLEGRO_ALIGN_LEFT, "U");
 			else
 				al_draw_text(font4, al_map_rgb(255, 255, 255), startX + 6, startY, ALLEGRO_ALIGN_LEFT, "D");
 		}
@@ -90,7 +90,7 @@ public:
 
 	void CancelIlluminate(ALLEGRO_FONT *font4)
 	{
-		al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 255));
+		al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 0));
 		if (buttonType == 2)
 		{
 			if (FbuttonDirection)

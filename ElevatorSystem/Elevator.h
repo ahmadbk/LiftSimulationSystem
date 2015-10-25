@@ -27,6 +27,8 @@ public:
 	Elevator(int sX, int sY, int eX, int eY) :startX(sX), startY(sY), endX(eX), endY(eY)
 	{
 		al_draw_filled_rectangle(sX, sY, eX, eY, al_map_rgb(0, 0, 255));
+		al_draw_line(startX + 24, startY, startX + 24, endY, al_map_rgb(255, 0, 100), 2);
+		al_draw_line(endX - 24, startY, endX - 24, endY, al_map_rgb(255, 0, 100), 2);
 	};
 
 	~Elevator(){};
@@ -53,7 +55,6 @@ public:
 
 	void moveUp()
 	{
-
 		if (startY - 1 >= 80 && direction && status)
 		{
 			al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 0));
@@ -62,6 +63,7 @@ public:
 			al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 255));
 			direction = true;
 		}
+		this->closeDoor();
 	}
 
 	void moveDown()
@@ -73,6 +75,7 @@ public:
 			endY+=4;
 			al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 255));
 		}
+		this->closeDoor();
 	}
 
 
@@ -173,6 +176,20 @@ public:
 			}
 		}
 		return destFloor;
+	}
+
+	void openDoor()
+	{
+		al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 255));
+		al_draw_line(startX + 4, startY, startX + 4, endY, al_map_rgb(255, 0, 40), 2);
+		al_draw_line(endX - 4, startY, endX - 4, endY, al_map_rgb(255, 0, 40), 2);
+	}
+
+	void closeDoor()
+	{
+		al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 255));
+		al_draw_line(startX + 24, startY, startX + 24, endY, al_map_rgb(255, 0, 100), 2);
+		al_draw_line(endX - 24, startY, endX - 24, endY, al_map_rgb(255, 0, 100), 2);
 	}
 
 
