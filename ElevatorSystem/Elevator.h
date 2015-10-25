@@ -57,8 +57,8 @@ public:
 		if (startY - 1 >= 80 && direction && status)
 		{
 			al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 0));
-			startY--;
-			endY--;
+			startY-=4;
+			endY-=4;
 			al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 255));
 			direction = true;
 		}
@@ -69,8 +69,8 @@ public:
 		if (startY + 1 <= 620 && !direction && status)
 		{
 			al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 0));
-			startY++;
-			endY++;
+			startY+=4;
+			endY+=4;
 			al_draw_filled_rectangle(startX, startY, endX, endY, al_map_rgb(0, 0, 255));
 		}
 	}

@@ -184,7 +184,7 @@ int main(int argc, char **argv)
 				int a = i + 1;
 				char c = (char)a;
 				const char *c1 = &c;
-				al_draw_text(font1, al_map_rgb(0, 0, 255), 80, sY, ALLEGRO_ALIGN_LEFT, c1);
+				al_draw_textf(font1, al_map_rgb(255, 255, 255), 80, sY, ALLEGRO_ALIGN_LEFT, "%d",i+1);
 				sY += 50;
 				eY += 50;
 			}
@@ -197,11 +197,8 @@ int main(int argc, char **argv)
 
 			for (int i = 0; i < 5; i++)
 			{
-				b2[i] = new Button(150, sY, 180, eY, height, ButtonType, (i + 1 + 5));
-				int a = i + 1 + 5;
-				char c = (char)a;
-				const char *c1 = &c;
-				al_draw_text(font1, al_map_rgb(0, 0, 255), 160, sY, ALLEGRO_ALIGN_LEFT, c1);
+				b2[i] = new Button(150, sY, 180, eY, height, ButtonType, (i + 6));
+				al_draw_textf(font1, al_map_rgb(255, 255, 255), 156, sY, ALLEGRO_ALIGN_LEFT, "%d",i+6);
 				sY += 50;
 				eY += 50;
 			}
@@ -230,12 +227,12 @@ int main(int argc, char **argv)
 				if (i != 0)
 				{
 					b3[i] = new Button(570, sY, 590, eY, height, ButtonType, (10 - i), true);			//creates the first column of the floor button excluding last floor
-					al_draw_text(font4, al_map_rgb(0, 0, 255), 576, sY, ALLEGRO_ALIGN_LEFT, "U");
+					al_draw_text(font4, al_map_rgb(255, 255, 255), 576, sY, ALLEGRO_ALIGN_LEFT, "U");
 				}
 				if (i != 9)
 				{
 					b4[i] = new Button(610, sY, 630, eY, height, ButtonType, (10 - i), false);			//creates the second column of the floor buttons excluding first floor
-					al_draw_text(font3, al_map_rgb(0, 0, 255), 616, sY, ALLEGRO_ALIGN_LEFT, "D");
+					al_draw_text(font4, al_map_rgb(255, 255, 255), 616, sY, ALLEGRO_ALIGN_LEFT, "D");
 				}
 				sY += 60;
 				eY += 60;
@@ -275,7 +272,7 @@ int main(int argc, char **argv)
 				if (ff1)
 				{
 					printf("%d\n", b1[i]->getBNum());	//print the button that was pressed	
-					b1[i]->illuminate();				//illuminate the corresponding button
+					b1[i]->illuminate(font1);				//illuminate the corresponding button
 
 					if (serviceList.size() > 0)
 					{
@@ -293,7 +290,7 @@ int main(int argc, char **argv)
 				if (ff2)
 				{
 					printf("%d\n", b2[i]->getBNum());
-					b2[i]->illuminate();
+					b2[i]->illuminate(font1);
 
 					if (serviceList.size() > 0)
 					{
@@ -333,7 +330,7 @@ int main(int argc, char **argv)
 				if (ff1)
 				{
 					printf("(%d,%d)\n", b3[i]->getBNum(), b3[i]->getDirection());	//print what floor button was pressed and the corresponding direction
-					b3[i]->illuminate();											//illuminate the button
+					b3[i]->illuminate(font4);											//illuminate the button
 
 					if (downRequestList.size() > 0)
 					{
@@ -351,7 +348,7 @@ int main(int argc, char **argv)
 				if (ff2)
 				{
 					printf("(%d,%d)\n", b4[i]->getBNum(), b4[i]->getDirection());
-					b4[i]->illuminate();
+					b4[i]->illuminate(font4);
 					if (downRequestList.size() > 0)
 					{
 						for (int a = 0; a < upRequestList.size(); a++)
@@ -468,6 +465,7 @@ int main(int argc, char **argv)
 
 		printf("%d\n", lift->floorPosition());	//Print the current position of the floor
 
+
 		if (ev.type == ALLEGRO_EVENT_TIMER)
 		{
 			if (lift->floorPosition() != destination)								// Keep doing tis if the elevator floor has not reached the destination
@@ -506,16 +504,16 @@ int main(int argc, char **argv)
 					{
 						int a = 0; // a will be the iterator
 						while (a < serviceList.size())						
-		{
+						{
 							if (destination == serviceList[a])				// Find the service request in the service list that was executed
-			{
+							{
 								serviceList.erase(serviceList.begin()+a);	// Remove the request from the list
 								a = serviceList.size();						// Force the loop to terminate 
 								currentRequest = -1;						// and set the current request to unalocated
 							}
 						}
 					}
-			}
+				}
 				lift->setStatus(false);
 
 				time(&now);  
@@ -524,7 +522,7 @@ int main(int argc, char **argv)
 				newyear.tm_mon = 0;  newyear.tm_mday = 1;
 
 				startSeconds = difftime(now, mktime(&newyear));				// Get the seconds when the the destination was reached
-		}
+			}
 			//accroding to the direction i have set the lift earlier, the lift will move in that direction								
 		}										//and surpass the other method --> this happens in the methods
 
